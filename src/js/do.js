@@ -232,7 +232,7 @@ Rp(function() {
 				}
 			}
 		}
-		xmlhttp.open("GET","core/search.php?q="+q+"&mode="+mode+"&autocomplete=1",true);
+		xmlhttp.open("GET","core/api.php/search/"+q+"&mode="+mode+"&autocomplete=1",true);
 		xmlhttp.send();
 	});
 	
@@ -248,7 +248,7 @@ Rp(function() {
 				}
 			}
 		}
-		xmlhttp.open("GET","core/search.php?q="+q+"&mode=5&autocomplete=1",true);
+		xmlhttp.open("GET","core/api.php/search/="+q+"&mode=5&autocomplete=1",true);
 		xmlhttp.send();
 	};
 	
@@ -264,7 +264,7 @@ Rp(function() {
 				}
 			}
 		}
-		xmlhttp.open("GET","core/search.php?q="+q+"&mode=6&autocomplete=1",true);
+		xmlhttp.open("GET","core/api.php/search/"+q+"&mode=6&autocomplete=1",true);
 		xmlhttp.send();
 	};
 
@@ -313,7 +313,7 @@ Rp(function() {
 		u = Rp('#login_username').val();
 		p = Rp('#login_password').val();
 		xmlhttp=new XMLHttpRequest();
-		xmlhttp.open("GET","core/auth.php?username="+u+"&password="+p,false);
+		xmlhttp.open("GET","core/api.php/auth/"+u+"/"+p,false);
 		xmlhttp.send();
 		var parsedJSON = eval('('+xmlhttp.responseText+')');
 
@@ -380,9 +380,8 @@ function updateTask(mode,task_id){
 		value = Rp('#addtag').val();
 	}
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("POST","core/updateTask.php",false);
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	xmlhttp.send("task_id="+task_id+"&mode="+mode+"&value="+value);
+	xmlhttp.open("PUT","core/api.php/updateTask/"+task_id+"/"+mode+"/"+value,false);
+	xmlhttp.send();
 }
 
 function updateProfile(mode,user_id){
@@ -401,31 +400,27 @@ function updateProfile(mode,user_id){
 		
 	}
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("POST","core/updateProfile.php",false);
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	xmlhttp.send("user_id="+user_id+"&mode="+mode+"&value="+value);
+	xmlhttp.open("PUT","core/api.php/updateProfile/"+user_id+"/"+mode+"/"+value,false);
+	xmlhttp.send();
 }
 
 function removeElement(mode,field,task_id,id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("POST","core/updateTask.php",false);
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	xmlhttp.send("task_id="+task_id+"&mode="+mode+"&value="+id);
+	xmlhttp.open("PUT","core/api.php/updateTask/"+task_id+"/"+mode+"/"+id,false);
+	xmlhttp.send();
 	field.outerHTML = "";
 }
 
 function negateTask(task_id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("POST","core/negateTask.php",false);
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	xmlhttp.send("task_id="+task_id);
+	xmlhttp.open("PUT","core/api.php/negateTask/"+task_id,false);
+	xmlhttp.send();
 }
 
 function deleteComment(comment_id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("POST","core/deleteComment.php",false);
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	xmlhttp.send("comment_id="+comment_id);
+	xmlhttp.open("DELETE","core/api.php/deleteComment/"+comment_id,false);
+	xmlhttp.send();
 	if ((_page-1)*10 == parseInt(_commentCount-1)) {
 		_page = _page - 1;
 	}
@@ -434,17 +429,15 @@ function deleteComment(comment_id){
 
 function deleteTask(task_id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("POST","core/deleteTask.php",false);
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	xmlhttp.send("task_id="+task_id);
+	xmlhttp.open("DELETE","core/api.php/deleteTask/"+task_id,false);
+	xmlhttp.send();
 	refreshTask(localStorage.user_id,_category_id);
 }
 
 function deleteCategory(category_id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("POST","core/deleteCategory.php",false);
-	xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
-	xmlhttp.send("category_id="+category_id);
+	xmlhttp.open("DELETE","core/api.php/deleteCategory/"+category_id,false);
+	xmlhttp.send();
 	refreshTask(localStorage.user_id,0);
 	refreshCategory(localStorage.user_id);
 	document.getElementById('taskLink').setAttribute('style','display:none;');
@@ -453,7 +446,7 @@ function deleteCategory(category_id){
 function refreshComment(task_id,page){
 	_page = page;
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET","core/getComment.php?task_id="+task_id+"&offset="+((page-1)*10),false);
+	xmlhttp.open("GET","core/api.php/getComment/"+task_id+"/"+((page-1)*10),false);
 	xmlhttp.send();
 	var parsedJSON = eval('('+xmlhttp.responseText+')');
 	document.getElementById('commentsList').innerHTML = "";
@@ -462,7 +455,7 @@ function refreshComment(task_id,page){
 		document.getElementById('commentsList').innerHTML += comment.outerHTML;
 	}
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET","core/countComment.php?task_id="+task_id,false);
+	xmlhttp.open("GET","core/api.php/countComment/"+task_id,false);
 	xmlhttp.send();
 	_commentCount = xmlhttp.responseText;
 	document.getElementById('commentCount').innerHTML = _commentCount;
@@ -486,7 +479,7 @@ function refreshComment(task_id,page){
 function refreshTask(user_id,category_id){
 	_category_id = category_id;
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET","core/getTask.php?user_id="+user_id+"&category_id="+category_id,false);
+	xmlhttp.open("GET","core/api.php/getTask/"+user_id+"/"+category_id,false);
 	xmlhttp.send();
 	var parsedJSON = eval('('+xmlhttp.responseText+')');
 	header = document.createElement('header');
@@ -520,7 +513,7 @@ function refreshTask(user_id,category_id){
 function refreshTask1(user_id,category_id){
 	_category_id = category_id;
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET","core/getTask.php?user_id="+user_id+"&category_id="+category_id,false);
+	xmlhttp.open("GET","core/api.php/getTask/"+user_id+"/"+category_id,false);
 	xmlhttp.send();
 	var parsedJSON = eval('('+xmlhttp.responseText+')');
 	header = document.createElement('header');
@@ -553,7 +546,7 @@ function refreshTask1(user_id,category_id){
 
 function refreshCategory(user_id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET","core/getCategory.php?user_id="+user_id,false);
+	xmlhttp.open("GET","core/api.php/getCategory/"+user_id,false);
 	xmlhttp.send();
 	var parsedJSON = eval('('+xmlhttp.responseText+')');
 	document.getElementById('categoryList').innerHTML = "";
@@ -585,7 +578,7 @@ function selectCategory(user_id,category_id) {
 function getSearchResult(q,mode,page){
 	_page = page+1;
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET","core/search.php?q="+q+"&mode="+mode+"&autocomplete=0&offset="+page*10,false);
+	xmlhttp.open("GET","core/api.php/search/"+q+"/"+mode+"&autocomplete=0&offset="+page*10,false);
 	xmlhttp.send();
 	var parsedJSON = eval('('+xmlhttp.responseText+')');
 	for (index=0; index < parsedJSON.length; index++) {
