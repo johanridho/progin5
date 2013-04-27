@@ -20,7 +20,7 @@
 		addTag($task_id,$tag);
 	}
 	foreach($assignee as $assign) {
-		addAssignee($assign,null,$category_id);
+		addAssignee($assign,$task_id);
 	}
 	foreach ($_FILES['attachment']['name'] as $_key => $_value) {
 		$extension = explode("/",$_FILES['attachment']['type'][$_key]);
