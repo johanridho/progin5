@@ -284,7 +284,7 @@ Rp(function() {
 		e.preventDefault();
 		body = Rp('#commentBody').val();
 		xmlhttp=new XMLHttpRequest();
-		xmlhttp.open("POST","core/postComment.php",false);
+		xmlhttp.open("POST","postComment.php",false);
 		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		xmlhttp.send("task_id="+_task_id+"&content="+body);
 		refreshComment(_task_id,_page);
