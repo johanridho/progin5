@@ -8,13 +8,11 @@
 	$name = $post['nama_lengkap'];
 	$birthdate = $post['tanggal_lahir'];
 	$email = $post['email'];
-	$user_id = querynid('INSERT into user (username,password,name,birthdate,email) values (:username,:password,:name,:birthdate,:email)',array(
-		'username' => $username,
-		'password' => $password,
-		'name' => $name,
-		'birthdate' => $birthdate,
-		'email' => $email
-		));
+	$client = new SoapClient(null, array(
+	  'location' => "http://localhost/IF3038-2013/src/core/soap.php",
+      'uri'      => "urn://www.herong.home/req",
+	  'trace'    => 1 ));
+	$user_id = $client->__soapCall("register",array($username,$password,$name,$birthdate,$email));
 	echo '<br />\n';
 	var_dump($user_id);
 	move_uploaded_file($_FILES["avatar"]["tmp_name"],"avatar/" . $user_id . '.jpg');

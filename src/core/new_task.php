@@ -9,9 +9,10 @@
 			'user_id' => $user_id,
 			'done' => $done
 		));
-		$tags = explode(",",$post['tag']);
-		foreach ($tags as $tag) {
-			addTag($task_id,$tag);
+		$tags = explode(",",$tag);
+		foreach ($tags as $tag_split) {
+			addTag($task_id,$tag_split);
+			echo $tag_split;
 		}
 		foreach($assignee as $assign) {
 			addAssignee($assign,$task_id);

@@ -1,16 +1,16 @@
-<%
-/*	require_once 'core/config.php';
+<?php
+	require_once 'core/config.php';
 	if ($login_permission && !getUserId())
 		header('Location: index.php');
 	if (!$login_permission && getUserId())
-		header('Location: dashboard.php');*/
-%>
+		header('Location: dashboard.php');
+?>
 <!doctype html>
 
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title><%=title%></title>
+		<title><?php echo $title; ?></title>
 		<link rel="stylesheet" href="css/style.css">
 	</head>
 

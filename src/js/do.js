@@ -232,7 +232,7 @@ Rp(function() {
 				}
 			}
 		}
-		xmlhttp.open("GET","core/api.php/search/"+q+"&mode="+mode+"&autocomplete=1",true);
+		xmlhttp.open("GET","core/api.php/search/"+q+"/"+mode+"/1/0/0",true);
 		xmlhttp.send();
 	});
 	
@@ -248,7 +248,7 @@ Rp(function() {
 				}
 			}
 		}
-		xmlhttp.open("GET","core/api.php/search/="+q+"&mode=5&autocomplete=1",true);
+		xmlhttp.open("GET","core/api.php/search/"+q+"/5/1/0/0",true);
 		xmlhttp.send();
 	};
 	
@@ -264,7 +264,7 @@ Rp(function() {
 				}
 			}
 		}
-		xmlhttp.open("GET","core/api.php/search/"+q+"&mode=6&autocomplete=1",true);
+		xmlhttp.open("GET","core/api.php/search/"+q+"/6/1/0/0",true);
 		xmlhttp.send();
 	};
 
@@ -578,7 +578,7 @@ function selectCategory(user_id,category_id) {
 function getSearchResult(q,mode,page){
 	_page = page+1;
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET","core/api.php/search/"+q+"/"+mode+"&autocomplete=0&offset="+page*10,false);
+	xmlhttp.open("GET","core/api.php/search/"+q+"/"+mode+"/0/0/"+page*10,false);
 	xmlhttp.send();
 	var parsedJSON = eval('('+xmlhttp.responseText+')');
 	for (index=0; index < parsedJSON.length; index++) {

@@ -1,8 +1,8 @@
-<%
-	String title = "Homepage";
-	/*$login_permission = 0;*/
-%>
-<%@include file="inc/header.jsp" %>
+<?php
+	$title = 'Homepage';
+	$login_permission = 0;
+	include 'inc/header.php';
+?>
 		<script>
 			_username = false;
 			_password = false;
@@ -106,4 +106,6 @@
 			</div>
 
 		</div>
-<%@include file="inc/footer.jsp" %>
+<?php
+	include 'inc/footer.php';
+?>
