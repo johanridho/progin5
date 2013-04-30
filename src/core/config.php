@@ -161,7 +161,7 @@ function delCategory($category_id) {
 class Db
 {
 	private static $db;
-	public static $api_loc = "http://localhost/IF3038-2013/src/core/api.php/";
+	public static $api_loc = "http://progin001.ap01.aws.af.cm/api.php/";
 	
 	public static function handler()
 	{
