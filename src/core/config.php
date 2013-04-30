@@ -15,15 +15,8 @@ function getUserName($user_id) {
 }
 
 function api($address) {
-	$hasil = json_decode(file_get_contents(Db::$api_loc.$address, true));
-	if (is_object($hasil)) {
-		return get_object_vars($hasil);
-	} else {
-		if (is_array($hasil)) foreach ($hasil as &$row) {
-			$row = get_object_vars($row);
-		}
-		return $hasil;
-	}
+	$hasil = json_decode(file_get_contents(Db::$api_loc.$address, true),true);
+	return $hasil;
 }
 
 function getUserUsername($user_id) {

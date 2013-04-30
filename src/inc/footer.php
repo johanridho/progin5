@@ -1,5 +1,5 @@
 			<footer class="site-footer">
-				Created by Gichie, Kamil, and Alex (tubes 1) | Kamil, Hanif, Damiann (tubes 2)
+				Created by Gichie, Kamil, and Alex (tubes 1) | Kamil, Hanif, Damiann (tubes 2) | Kamil, Chris, Abraham (tubes 4)
 			</footer>
 		</div>
 		<script src="js/bajuri.js"></script>
