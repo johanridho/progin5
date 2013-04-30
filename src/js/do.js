@@ -321,7 +321,7 @@ Rp(function() {
 
 		if (parsedJSON.success) {
 			localStorage.user_id = parsedJSON.user_id;
-			window.location.href = 'dashboard.php';
+			window.location.href = 'auth.php?user_id='+parsedJSON.user_id;
 		}
 		else
 			alert('Invalid username/password combination.');
