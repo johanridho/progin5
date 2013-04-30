@@ -286,11 +286,15 @@ Rp(function() {
 		e.preventDefault();
 		body = Rp('#commentBody').val();
 		xmlhttp=new XMLHttpRequest();
-		xmlhttp.open("POST","postComment.php",false);
+		xmlhttp.onreadystatechange=function() {
+			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+				refreshComment(_task_id,_page);
+				Rp('#commentBody').nodes[0].value = "";
+			}
+		}
+		xmlhttp.open("POST","postComment.php",true);
 		xmlhttp.setRequestHeader("Content-type","application/x-www-form-urlencoded");
 		xmlhttp.send("task_id="+_task_id+"&content="+body);
-		refreshComment(_task_id,_page);
-		Rp('#commentBody').nodes[0].value = "";
 	});
 
 	Rp('#loginLink').on('click', function(e) {
@@ -315,16 +319,19 @@ Rp(function() {
 		u = Rp('#login_username').val();
 		p = Rp('#login_password').val();
 		xmlhttp=new XMLHttpRequest();
-		xmlhttp.open("GET",api_loc+"auth/"+u+"/"+p,false);
-		xmlhttp.send();
-		var parsedJSON = eval('('+xmlhttp.responseText+')');
-
-		if (parsedJSON.success) {
-			localStorage.user_id = parsedJSON.user_id;
-			window.location.href = 'auth.php?user_id='+parsedJSON.user_id;
+		xmlhttp.onreadystatechange=function() {
+			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+				var parsedJSON = eval('('+xmlhttp.responseText+')');
+				if (parsedJSON.success) {
+					localStorage.user_id = parsedJSON.user_id;
+					window.location.href = 'auth.php?user_id='+parsedJSON.user_id;
+				}
+				else
+					alert('Invalid username/password combination.');
+			}
 		}
-		else
-			alert('Invalid username/password combination.');
+		xmlhttp.open("GET",api_loc+"auth/"+u+"/"+p,true);
+		xmlhttp.send();
 	});
 
 	Rp('#newCategoryForm').on('submit', function(e) {
@@ -382,7 +389,7 @@ function updateTask(mode,task_id){
 		value = Rp('#addtag').val();
 	}
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("PUT",api_loc+"updateTask/"+task_id+"/"+mode+"/"+value,false);
+	xmlhttp.open("PUT",api_loc+"updateTask/"+task_id+"/"+mode+"/"+value,true);
 	xmlhttp.send();
 }
 
@@ -402,173 +409,203 @@ function updateProfile(mode,user_id){
 		
 	}
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("PUT",api_loc+"updateProfile/"+user_id+"/"+mode+"/"+value,false);
+	xmlhttp.open("PUT",api_loc+"updateProfile/"+user_id+"/"+mode+"/"+value,true);
 	xmlhttp.send();
 }
 
 function removeElement(mode,field,task_id,id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("PUT",api_loc+"updateTask/"+task_id+"/"+mode+"/"+id,false);
+	xmlhttp.open("PUT",api_loc+"updateTask/"+task_id+"/"+mode+"/"+id,true);
 	xmlhttp.send();
 	field.outerHTML = "";
 }
 
 function negateTask(task_id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("PUT",api_loc+"negateTask/"+task_id,false);
+	xmlhttp.open("PUT",api_loc+"negateTask/"+task_id,true);
 	xmlhttp.send();
 }
 
 function deleteComment(comment_id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("DELETE",api_loc+"deleteComment/"+comment_id,false);
-	xmlhttp.send();
-	if ((_page-1)*10 == parseInt(_commentCount-1)) {
-		_page = _page - 1;
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {					
+			if ((_page-1)*10 == parseInt(_commentCount-1)) {
+				_page = _page - 1;
+			}
+			refreshComment(_task_id,_page);
+		}
 	}
-	refreshComment(_task_id,_page);
+	xmlhttp.open("DELETE",api_loc+"deleteComment/"+comment_id,true);
+	xmlhttp.send();
 }
 
 function deleteTask(task_id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("DELETE",api_loc+"deleteTask/"+task_id,false);
+	xmlhttp.open("DELETE",api_loc+"deleteTask/"+task_id,true);
 	xmlhttp.send();
 	refreshTask(localStorage.user_id,_category_id);
 }
 
 function deleteCategory(category_id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("DELETE",api_loc+"deleteCategory/"+category_id,false);
+	xmlhttp.onreadystatechange=function() {
+		if(xmlhttp.readyState==4 && xmlhttp.status==200) {					
+			refreshTask(localStorage.user_id,0);
+			refreshCategory(localStorage.user_id);
+			document.getElementById('taskLink').setAttribute('style','display:none;');
+		}
+	}
+	xmlhttp.open("DELETE",api_loc+"deleteCategory/"+category_id,true);
 	xmlhttp.send();
-	refreshTask(localStorage.user_id,0);
-	refreshCategory(localStorage.user_id);
-	document.getElementById('taskLink').setAttribute('style','display:none;');
 }
 
 function refreshComment(task_id,page){
 	_page = page;
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET",api_loc+"getComment/"+task_id+"/"+((page-1)*10),false);
-	xmlhttp.send();
-	var parsedJSON = eval('('+xmlhttp.responseText+')');
-	document.getElementById('commentsList').innerHTML = "";
-	for (index=0; index < parsedJSON.length; index++) {
-		comment = genComment(parsedJSON[index].user_id,parsedJSON[index].user_name,parsedJSON[index].content,parsedJSON[index].time,parsedJSON[index].comment_id);
-		document.getElementById('commentsList').innerHTML += comment.outerHTML;
-	}
-	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET",api_loc+"countComment/"+task_id,false);
-	xmlhttp.send();
-	_commentCount = xmlhttp.responseText;
-	document.getElementById('commentCount').innerHTML = _commentCount;
-	if (xmlhttp.responseText > 10) {
-		document.getElementById('commentPage').innerHTML = "Page :";
-		for (index=1; (index-1)*10 < _commentCount; index++) {
-			number = document.createElement('a');
-			number.className = 'numbers';
-			if (index == page)
-				number.className += ' active';
-			number.setAttribute('href', '#');
-			number.setAttribute('onclick', 'refreshComment('+_task_id+','+index+')');
-			number.appendChild(document.createTextNode(index));
-			document.getElementById('commentPage').innerHTML += number.outerHTML;
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			var parsedJSON = eval('('+xmlhttp.responseText+')');
+			document.getElementById('commentsList').innerHTML = "";
+			for (index=0; index < parsedJSON.length; index++) {
+				comment = genComment(parsedJSON[index].user_id,parsedJSON[index].user_name,parsedJSON[index].content,parsedJSON[index].time,parsedJSON[index].comment_id);
+				document.getElementById('commentsList').innerHTML += comment.outerHTML;
+			}
 		}
-	} else {
-		document.getElementById('commentPage').innerHTML = "";
 	}
+	xmlhttp.open("GET",api_loc+"getComment/"+task_id+"/"+((page-1)*10),true);
+	xmlhttp.send();
+	
+	xmlhttp=new XMLHttpRequest();
+	xmlhttp.onreadystatechange=function() {
+	if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+		_commentCount = xmlhttp.responseText;
+		document.getElementById('commentCount').innerHTML = _commentCount;
+		if (xmlhttp.responseText > 10) {
+			document.getElementById('commentPage').innerHTML = "Page :";
+			for (index=1; (index-1)*10 < _commentCount; index++) {
+				number = document.createElement('a');
+				number.className = 'numbers';
+				if (index == page)
+				number.className += ' active';
+				number.setAttribute('href', '#');
+				number.setAttribute('onclick', 'refreshComment('+_task_id+','+index+')');
+				number.appendChild(document.createTextNode(index));
+				document.getElementById('commentPage').innerHTML += number.outerHTML;
+				}
+			} else {
+				document.getElementById('commentPage').innerHTML = "";
+			}
+		}
+		xmlhttp.open("GET",api_loc+"countComment/"+task_id,true);
+		xmlhttp.send();
+	}	
 }
 
 function refreshTask(user_id,category_id){
 	_category_id = category_id;
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET",api_loc+"getTask/"+user_id+"/"+category_id,false);
-	xmlhttp.send();
-	var parsedJSON = eval('('+xmlhttp.responseText+')');
-	header = document.createElement('header');
-	h3 = document.createElement('h3');
-	h3.appendChild(document.createTextNode('Current Task'));
-	header.appendChild(h3);
-	document.getElementById('activeTask').innerHTML = header.outerHTML;
-	header = document.createElement('header');
-	h3 = document.createElement('h3');
-	h3.appendChild(document.createTextNode('Completed Task'));
-	header.appendChild(h3);
-	document.getElementById('doneTask').innerHTML = header.outerHTML;
-	var done =false;
-	var active = false;
-	for (index=0; index < parsedJSON.length; index++) {
-		task = genTask(parsedJSON[index]);
-		if (parsedJSON[index].done == 0) {
-			document.getElementById('activeTask').innerHTML += task.outerHTML;
-			active = true;
-		} else {
-			document.getElementById('doneTask').innerHTML += task.outerHTML;
-			done = true;
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			var parsedJSON = eval('('+xmlhttp.responseText+')');
+			header = document.createElement('header');
+			h3 = document.createElement('h3');
+			h3.appendChild(document.createTextNode('Current Task'));
+			header.appendChild(h3);
+			document.getElementById('activeTask').innerHTML = header.outerHTML;
+			header = document.createElement('header');
+			h3 = document.createElement('h3');
+			h3.appendChild(document.createTextNode('Completed Task'));
+			header.appendChild(h3);
+			document.getElementById('doneTask').innerHTML = header.outerHTML;
+			var done =false;
+			var active = false;
+			for (index=0; index < parsedJSON.length; index++) {
+				task = genTask(parsedJSON[index]);
+				if (parsedJSON[index].done == 0) {
+					document.getElementById('activeTask').innerHTML += task.outerHTML;
+					active = true;
+				} else {
+					document.getElementById('doneTask').innerHTML += task.outerHTML;
+					done = true;
+				}
+			}
+			if (active == 0)
+				document.getElementById('activeTask').innerHTML += 'No task available!';
+			if (done == 0)
+				document.getElementById('doneTask').innerHTML += 'No task available!';
 		}
 	}
-	if (active == 0)
-		document.getElementById('activeTask').innerHTML += 'No task available!';
-	if (done == 0)
-		document.getElementById('doneTask').innerHTML += 'No task available!';
+	xmlhttp.open("GET",api_loc+"getTask/"+user_id+"/"+category_id,true);
+	xmlhttp.send();
 }
 
 function refreshTask1(user_id,category_id){
 	_category_id = category_id;
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET",api_loc+"getTask/"+user_id+"/"+category_id,false);
-	xmlhttp.send();
-	var parsedJSON = eval('('+xmlhttp.responseText+')');
-	header = document.createElement('header');
-	h3 = document.createElement('h3');
-	h3.appendChild(document.createTextNode('Current Task'));
-	header.appendChild(h3);
-	document.getElementById('activeTask1').innerHTML = header.outerHTML;
-	header = document.createElement('header');
-	h3 = document.createElement('h3');
-	h3.appendChild(document.createTextNode('Completed Task'));
-	header.appendChild(h3);
-	document.getElementById('doneTask1').innerHTML = header.outerHTML;
-	var done =false;
-	var active = false;
-	for (index=0; index < parsedJSON.length; index++) {
-		task = genTask1(parsedJSON[index]);
-		if (parsedJSON[index].done == 0) {
-			document.getElementById('activeTask1').innerHTML += task.outerHTML;
-			active = true;
-		} else {
-			document.getElementById('doneTask1').innerHTML += task.outerHTML;
-			done = true;
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			var parsedJSON = eval('('+xmlhttp.responseText+')');
+			header = document.createElement('header');
+			h3 = document.createElement('h3');
+			h3.appendChild(document.createTextNode('Current Task'));
+			header.appendChild(h3);
+			document.getElementById('activeTask1').innerHTML = header.outerHTML;
+			header = document.createElement('header');
+			h3 = document.createElement('h3');
+			h3.appendChild(document.createTextNode('Completed Task'));
+			header.appendChild(h3);
+			document.getElementById('doneTask1').innerHTML = header.outerHTML;
+			var done =false;
+			var active = false;
+			for (index=0; index < parsedJSON.length; index++) {
+				task = genTask1(parsedJSON[index]);
+				if (parsedJSON[index].done == 0) {
+					document.getElementById('activeTask1').innerHTML += task.outerHTML;
+					active = true;
+				} else {
+					document.getElementById('doneTask1').innerHTML += task.outerHTML;
+					done = true;
+				}
+			}
+			if (active == 0)
+				document.getElementById('activeTask1').innerHTML += 'No task available!';
+			if (done == 0)
+				document.getElementById('doneTask1').innerHTML += 'No task available!';
 		}
 	}
-	if (active == 0)
-		document.getElementById('activeTask1').innerHTML += 'No task available!';
-	if (done == 0)
-		document.getElementById('doneTask1').innerHTML += 'No task available!';
+	xmlhttp.open("GET",api_loc+"getTask/"+user_id+"/"+category_id,true);
+	xmlhttp.send();
+	
 }
 
 function refreshCategory(user_id){
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET",api_loc+"getCategory/"+user_id,false);
-	xmlhttp.send();
-	var parsedJSON = eval('('+xmlhttp.responseText+')');
-	document.getElementById('categoryList').innerHTML = "";
-	for (index=0; index < parsedJSON.length; index++) {
-		list = document.createElement('li');
-		link = document.createElement('a');
-		link.appendChild(document.createTextNode(parsedJSON[index].name));
-		link.setAttribute('href', '#');
-		link.setAttribute('onclick', 'selectCategory('+localStorage.user_id+','+parsedJSON[index].category_id+');');
-		list.appendChild(link);
-		if (parsedJSON[index].user_id == localStorage.user_id) {
-			del = document.createElement('span');
-			del.setAttribute('onclick', 'deleteCategory('+parsedJSON[index].category_id+')');
-			del.appendChild(document.createTextNode('(x delete '+parsedJSON[index].name+')'));
-			list.appendChild(del);
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			var parsedJSON = eval('('+xmlhttp.responseText+')');
+			document.getElementById('categoryList').innerHTML = "";
+			for (index=0; index < parsedJSON.length; index++) {
+				list = document.createElement('li');
+				link = document.createElement('a');
+				link.appendChild(document.createTextNode(parsedJSON[index].name));
+				link.setAttribute('href', '#');
+				link.setAttribute('onclick', 'selectCategory('+localStorage.user_id+','+parsedJSON[index].category_id+');');
+				list.appendChild(link);
+				if (parsedJSON[index].user_id == localStorage.user_id) {
+					del = document.createElement('span');
+					del.setAttribute('onclick', 'deleteCategory('+parsedJSON[index].category_id+')');
+					del.appendChild(document.createTextNode('(x delete '+parsedJSON[index].name+')'));
+					list.appendChild(del);
+				}
+				document.getElementById('categoryList').innerHTML += list.outerHTML;
+			}
+			if (parsedJSON.length == 0)
+				document.getElementById('categoryList').innerHTML += 'No Category Available!';
 		}
-		document.getElementById('categoryList').innerHTML += list.outerHTML;
 	}
-	if (parsedJSON.length == 0)
-		document.getElementById('categoryList').innerHTML += 'No Category Available!';
+	xmlhttp.open("GET",api_loc+"getCategory/"+user_id,true);
+	xmlhttp.send();
 }
 
 function selectCategory(user_id,category_id) {
@@ -580,9 +617,9 @@ function selectCategory(user_id,category_id) {
 function getSearchResult(q,mode,page){
 	_page = page+1;
 	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("GET",api_loc+"search/"+q+"/"+mode+"/0/0/"+page*10,false);
-	xmlhttp.send();
-	var parsedJSON = eval('('+xmlhttp.responseText+')');
+	xmlhttp.onreadystatechange=function() {
+		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
+			var parsedJSON = eval('('+xmlhttp.responseText+')');
 	for (index=0; index < parsedJSON.length; index++) {
 		if (parsedJSON[index].type == 'task') {
 			if (!tasks) {
@@ -624,6 +661,10 @@ function getSearchResult(q,mode,page){
 			document.getElementById('searchResult').innerHTML += 'No search result!';
 		_done = true;
 	}
+		}
+	}
+	xmlhttp.open("GET",api_loc+"search/"+q+"/"+mode+"/0/0/"+page*10,true);
+	xmlhttp.send();
 }
 
 function loadMoreSearch(){
