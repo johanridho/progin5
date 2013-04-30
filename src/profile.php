@@ -85,7 +85,7 @@
 						<div class="buttons">
 							<button type="submit" name="ganti_pass" id="submitPass" onclick="updateProfile('password',<?php echo $_GET['user_id']; ?>);">Save Password</button>
 						</div>
-					<?php if ($user['user_id'] == getUserId()) :?>
+					<?php if ($_GET['user_id'] == getUserId()) :?>
 							<br>
 						</div>
 					</form>
