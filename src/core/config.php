@@ -1,6 +1,5 @@
 <?php
 session_start();
-
 function getUserID() {
 	return (isset($_SESSION["user_id"])?$_SESSION["user_id"]:0);
 }
@@ -10,33 +9,51 @@ function findById($table,$id) {
 }
 
 function getUserName($user_id) {
-	$row = findById('user',$user_id);
-	return $row['name'];
+	$json = file_get_contents(Db::$api_loc."getProfile/".$user_id, true);
+	$json = json_decode($json);
+	return $json->name;
+}
+
+function api($address) {
+	$hasil = json_decode(file_get_contents(Db::$api_loc.$address, true));
+	if (is_object($hasil)) {
+		return get_object_vars($hasil);
+	} else {
+		if (is_array($hasil)) foreach ($hasil as &$row) {
+			$row = get_object_vars($row);
+		}
+		return $hasil;
+	}
 }
 
 function getUserUsername($user_id) {
-	$row = findById('user',$user_id);
-	return $row['username'];
+	$json = file_get_contents(Db::$api_loc."getProfile/".$user_id, true);
+	$json = json_decode($json);
+	return $json->username;
 }
 
 function getUserBirthdate($user_id) {
-	$row = findById('user',$user_id);
-	return $row['birthdate'];
+	$json = file_get_contents(Db::$api_loc."getProfile/".$user_id, true);
+	$json = json_decode($json);
+	return $json->birthdate;
 }
 
 function getUserFullname($user_id) {
-	$row = findById('user',$user_id);
-	return $row['name'];
+	$json = file_get_contents(Db::$api_loc."getProfile/".$user_id, true);
+	$json = json_decode($json);
+	return $json->name;
 }
 
 function getUserEmail($user_id) {
-	$row = findById('user',$user_id);
-	return $row['email'];
+	$json = file_get_contents(Db::$api_loc."getProfile/".$user_id, true);
+	$json = json_decode($json);
+	return $json->email;
 }
 
 function getTagName($tag_id) {
-	$row = findById('tag',$tag_id);
-	return $row['name'];
+	$json = file_get_contents(Db::$api_loc."getTag/".$tag_id, true);
+	$json = json_decode($json);
+	return $json->name;
 }
 
 function query($statement,$cond) {
@@ -151,6 +168,7 @@ function delCategory($category_id) {
 class Db
 {
 	private static $db;
+	public static $api_loc = "http://localhost/IF3038-2013/src/core/api.php/";
 	
 	public static function handler()
 	{

@@ -6,7 +6,9 @@
 	require_once 'deleteTask.php';
 	require_once 'getCategory.php';
 	require_once 'getComment.php';
+	require_once 'getProfile.php';
 	require_once 'getTask.php';
+	require_once 'getTag.php';
 	require_once 'negateTask.php';
 	require_once 'search.php';
 	require_once 'updateProfile.php';
@@ -46,6 +48,27 @@
 				break;
 			case 'getComment':
 				getComment($request[1],$request[2]);
+				break;
+			case 'getProfile':
+				getProfile($request[1]);
+				break;
+			case 'getPermission':
+				getPermission($request[1],$request[2]);
+				break;
+			case 'getTag':
+				getTag($request[1]);
+				break;
+			case 'getTags':
+				getTags($request[1]);
+				break;
+			case 'getAttachments':
+				getAttachments($request[1]);
+				break;
+			case 'getAssignees':
+				getAssignees($request[1]);
+				break;
+			case 'getSingleTask':
+				getSingleTask($request[1]);
 				break;
 			case 'getTask':
 				getTask($request[1],$request[2]);

@@ -10,4 +10,20 @@
 		}
 		echo json_encode($hasil);
 	}
+	function getSingleTask($task_id) {
+		$hasil = query('select * from task WHERE task_id = :task_id',array('task_id' => $task_id));
+		echo json_encode($hasil);
+	}
+	function getPermission($user_id,$task_id) {
+		$hasil = query("select user_id from task where task_id = :task_id and user_id = :user_id union select user_id from assign where task_id = :task_id and user_id = :user_id",array('user_id' => $user_id, 'task_id' => $task_id));
+		echo json_encode($hasil);
+	}
+	function getAssignees($task_id) {
+		$hasil = queryAll('select * from assign where task_id = :task_id',array('task_id' => $task_id));
+		echo json_encode($hasil);
+	}
+	function getAttachments($task_id) {
+		$hasil = queryAll('select * from attachment where task_id = :task_id',array('task_id' => $task_id));
+		echo json_encode($hasil);
+	}
 ?>
