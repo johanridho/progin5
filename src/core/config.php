@@ -165,25 +165,24 @@ class Db
 	
 	public static function handler()
 	{
-		$services_json = json_decode(getenv("VCAP_SERVICES"),true);
-		$mysql_config = $services_json["mysql-5.1"][0]["credentials"];
-		$username = $mysql_config["username"];
-		$password = $mysql_config["password"];
-		$hostname = $mysql_config["hostname"];
-		$port = $mysql_config["port"];
-		$db = $mysql_config["name"];
-		mysql_connect($hostname,$username,$password);
-		/*if (!self::$db)
+		if (!self::$db)
 		{
 			try {
-				self::$db = new PDO('mysql:host=localhost;dbname=progin_405_13510001', 'progin', 'progin');
+				$services_json = json_decode(getenv("VCAP_SERVICES"),true);
+				$mysql_config = $services_json["mysql-5.1"][0]["credentials"];
+				$username = $mysql_config["username"];
+				$password = $mysql_config["password"];
+				$hostname = $mysql_config["hostname"];
+				$port = $mysql_config["port"];
+				$db = $mysql_config["name"];
+				self::$db = new PDO("mysql:host=$hostname;dbname=$db;port=$port", $username, $password);
 				self::$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 				self::$db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 			} catch (PDOException $e) {
 				die('Connection error: ' . $e->getMessage());
 			}
 		}
-		return self::$db;*/
+		return self::$db;
 	}
 }
 
