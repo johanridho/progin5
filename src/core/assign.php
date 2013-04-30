@@ -1,7 +1,7 @@
 <?php
 	require_once 'config.php';
 	function assign($task_id,$type,$category_id,$name) {
-		switch($post['type']) {
+		switch($type) {
 		case 'delete':
 			delAssignee($name,$task_id,$category_id);
 			break;

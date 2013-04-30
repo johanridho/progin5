@@ -4,7 +4,7 @@
 	include 'inc/header.php';
 	if (!isset($_GET['task_id']))
 		header('Location: dashboard.php');
-	$tugas = query('select * from task where task_id = :task_id',array('task_id' => $_GET['task_id']));
+	$tugas = api("getSingleTask/".$_GET['task_id']);
 	if (!$tugas)
 		header('Location: dashboard.php');
 ?>
@@ -23,7 +23,7 @@
 						</h1>
 					</form>
 					<?php 
-					$isPermit = query("select user_id from task where task_id = :task_id and user_id = :user_id union select user_id from assign where task_id = :task_id and user_id = :user_id",array('user_id' => getUserId(), 'task_id' => $_GET['task_id']));
+					$isPermit = api("getPermission/".getUserId()."/".$_GET['task_id']);
 					if($isPermit['user_id']) :?>
 					<ul>
 						<li><a href="#" id="editTaskLink">Edit Task</a></li>
@@ -41,7 +41,7 @@
 						</p>
 						<p class="assignee">
 							<span class="detail-label">Assignee:</span>
-							<?php $assignees = queryAll('select * from assign where task_id = :task_id',array('task_id' => $_GET['task_id']));
+							<?php $assignees = api("getAssignees/".$_GET['task_id']);
 							if ($assignees) : ?>
 								<?php foreach($assignees as $assignee):?>
 									<span class="detail-content names"><a href="profile.php?user_id=<?php echo $assignee['user_id'] ?>"><?php echo getUserName($assignee['user_id']) ?></a></span>
@@ -54,7 +54,7 @@
 						</p>
 						<p class="tags">
 							<span class="detail-label">Tag:</span>
-							<?php $tags = queryAll('select * from tags where task_id = :task_id',array('task_id' => $_GET['task_id']));
+							<?php $tags = api("getTags/".$_GET['task_id']);
 							if ($tags) : ?>
 								<?php foreach($tags as $tag):?>
 									<span class="tag"><?php echo getTagName($tag['tag_id']) ?></span>
@@ -68,7 +68,7 @@
 						<header>
 							<h3>Attachment</h3>
 						</header>
-						<?php $attachments = queryAll('select * from attachment where task_id = :task_id',array('task_id' => $_GET['task_id']));
+						<?php $attachments = api("getAttachments/".$_GET['task_id']);
 							if ($attachments) : ?>
 								<?php foreach($attachments as $attachment):?>
 								<?php if ($attachment['type'] == 'file'): ?>
@@ -109,7 +109,7 @@
 							<div class="buttons">
 								<button onclick="updateTask('addassignee',<?php echo $_GET['task_id']; ?>);">Add Assignee</button>
 							</div>
-							<?php $assignees = queryAll('select * from assign where task_id = :task_id',array('task_id' => $_GET['task_id']));
+							<?php $assignees = api("getAssignees/".$_GET['task_id']);
 							if ($assignees) : ?><br><label>click to delete</label>
 								<?php foreach($assignees as $assignee):?>
 									<span class="detail-content names" onclick="removeElement('delassignee',this,<?php echo $_GET['task_id']; ?>,<?php echo $assignee['id'];?>)"><?php echo getUserName($assignee['user_id']) ?></span>
@@ -123,7 +123,7 @@
 							<div class="buttons">
 								<button onclick="updateTask('addtag',<?php echo $_GET['task_id']; ?>);">Add Tag</button>
 							</div>
-							<?php $tags = queryAll('select * from tags where task_id = :task_id',array('task_id' => $_GET['task_id']));
+							<?php $tags = api("getTags/".$_GET['task_id']);
 							if ($tags) : ?><br><label>click to delete</label>
 								<?php foreach($tags as $tag):?>
 									<span class="tag" onclick="removeElement('deltag',this,<?php echo $_GET['task_id']; ?>,<?php echo $tag['id'];?>)"><?php echo getTagName($tag['tag_id']) ?></span>
