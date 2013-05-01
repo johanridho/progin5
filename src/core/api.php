@@ -4,6 +4,7 @@
 	require_once 'countComment.php';
 	require_once 'deleteComment.php';
 	require_once 'deleteTask.php';
+	require_once 'deleteCategory.php';
 	require_once 'getCategory.php';
 	require_once 'getComment.php';
 	require_once 'getProfile.php';
