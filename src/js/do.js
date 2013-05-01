@@ -224,7 +224,7 @@ Rp(function() {
 		q = this.value;
 		e = document.getElementById('searchMode');
 		mode = e.options[e.selectedIndex].value;
-		xmlhttp=new XMLHttpRequest();
+		var xmlhttp=new XMLHttpRequest();
 		xmlhttp.onreadystatechange=function() {
 			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 				var parsedJSON = eval('('+xmlhttp.responseText+')');
@@ -240,7 +240,7 @@ Rp(function() {
 	
 	assignee_autocomplete = function(field) {
 		q = field.value;
-		xmlhttp=new XMLHttpRequest();
+		var xmlhttp=new XMLHttpRequest();
 		xmlhttp.onreadystatechange=function() {
 			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 				var parsedJSON = eval('('+xmlhttp.responseText+')');
@@ -256,7 +256,7 @@ Rp(function() {
 	
 	tag_autocomplete = function(field) {
 		q = field.value;
-		xmlhttp=new XMLHttpRequest();
+		var xmlhttp=new XMLHttpRequest();
 		xmlhttp.onreadystatechange=function() {
 			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 				var parsedJSON = eval('('+xmlhttp.responseText+')');
@@ -285,7 +285,7 @@ Rp(function() {
 	Rp('#commentForm').on('submit', function(e) {
 		e.preventDefault();
 		body = Rp('#commentBody').val();
-		xmlhttp=new XMLHttpRequest();
+		var xmlhttp=new XMLHttpRequest();
 		xmlhttp.onreadystatechange=function() {
 			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 				refreshComment(_task_id,_page);
@@ -318,7 +318,7 @@ Rp(function() {
 		e.preventDefault();
 		u = Rp('#login_username').val();
 		p = Rp('#login_password').val();
-		xmlhttp=new XMLHttpRequest();
+		var xmlhttp=new XMLHttpRequest();
 		xmlhttp.onreadystatechange=function() {
 			if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 				var parsedJSON = eval('('+xmlhttp.responseText+')');
@@ -388,8 +388,8 @@ function updateTask(mode,task_id){
 	if (mode == "addtag") {
 		value = Rp('#addtag').val();
 	}
-	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("PUT",api_loc+"updateTask/"+task_id+"/"+mode+"/"+value,true);
+	var xmlhttp=new XMLHttpRequest();
+	xmlhttp.open("PUT",api_loc+"updateTask/"+task_id+"/"+mode+"/"+value,false);
 	xmlhttp.send();
 }
 
@@ -408,26 +408,26 @@ function updateProfile(mode,user_id){
 		value = Rp('#password').val();
 		
 	}
-	xmlhttp=new XMLHttpRequest();
-	xmlhttp.open("PUT",api_loc+"updateProfile/"+user_id+"/"+mode+"/"+value,true);
+	var xmlhttp=new XMLHttpRequest();
+	xmlhttp.open("PUT",api_loc+"updateProfile/"+user_id+"/"+mode+"/"+value,false);
 	xmlhttp.send();
 }
 
 function removeElement(mode,field,task_id,id){
-	xmlhttp=new XMLHttpRequest();
+	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.open("PUT",api_loc+"updateTask/"+task_id+"/"+mode+"/"+id,true);
 	xmlhttp.send();
 	field.outerHTML = "";
 }
 
 function negateTask(task_id){
-	xmlhttp=new XMLHttpRequest();
+	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.open("PUT",api_loc+"negateTask/"+task_id,true);
 	xmlhttp.send();
 }
 
 function deleteComment(comment_id){
-	xmlhttp=new XMLHttpRequest();
+	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 && xmlhttp.status==200) {					
 			if ((_page-1)*10 == parseInt(_commentCount-1)) {
@@ -441,14 +441,14 @@ function deleteComment(comment_id){
 }
 
 function deleteTask(task_id){
-	xmlhttp=new XMLHttpRequest();
+	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.open("DELETE",api_loc+"deleteTask/"+task_id,true);
 	xmlhttp.send();
 	refreshTask(localStorage.user_id,_category_id);
 }
 
 function deleteCategory(category_id){
-	xmlhttp=new XMLHttpRequest();
+	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function() {
 		if(xmlhttp.readyState==4 && xmlhttp.status==200) {					
 			refreshTask(localStorage.user_id,0);
@@ -462,49 +462,53 @@ function deleteCategory(category_id){
 
 function refreshComment(task_id,page){
 	_page = page;
-	xmlhttp=new XMLHttpRequest();
-	xmlhttp.onreadystatechange=function() {
-		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-			var parsedJSON = eval('('+xmlhttp.responseText+')');
+	console.log('halo');
+	var xmlhttp1=new XMLHttpRequest();
+	xmlhttp1.onreadystatechange=function() {
+		if (xmlhttp1.readyState==4 && xmlhttp1.status==200) {
+			console.log('hai');
+			var parsedJSON = eval('('+xmlhttp1.responseText+')');
 			document.getElementById('commentsList').innerHTML = "";
 			for (index=0; index < parsedJSON.length; index++) {
+				console.log(parsedJSON[index]);
 				comment = genComment(parsedJSON[index].user_id,parsedJSON[index].user_name,parsedJSON[index].content,parsedJSON[index].time,parsedJSON[index].comment_id);
 				document.getElementById('commentsList').innerHTML += comment.outerHTML;
 			}
 		}
 	}
-	xmlhttp.open("GET",api_loc+"getComment/"+task_id+"/"+((page-1)*10),true);
-	xmlhttp.send();
+	xmlhttp1.open("GET",api_loc+"getComment/"+task_id+"/"+((page-1)*10),true);
+	xmlhttp1.send();
 	
-	xmlhttp=new XMLHttpRequest();
-	xmlhttp.onreadystatechange=function() {
-	if (xmlhttp.readyState==4 && xmlhttp.status==200) {
-		_commentCount = xmlhttp.responseText;
-		document.getElementById('commentCount').innerHTML = _commentCount;
-		if (xmlhttp.responseText > 10) {
-			document.getElementById('commentPage').innerHTML = "Page :";
-			for (index=1; (index-1)*10 < _commentCount; index++) {
-				number = document.createElement('a');
-				number.className = 'numbers';
-				if (index == page)
-				number.className += ' active';
-				number.setAttribute('href', '#');
-				number.setAttribute('onclick', 'refreshComment('+_task_id+','+index+')');
-				number.appendChild(document.createTextNode(index));
-				document.getElementById('commentPage').innerHTML += number.outerHTML;
+	var xmlhttp2=new XMLHttpRequest();
+	xmlhttp2.onreadystatechange=function() {
+		if (xmlhttp2.readyState==4 && xmlhttp2.status==200) {
+			_commentCount = xmlhttp2.responseText;
+			console.log(xmlhttp2.responseText);
+			document.getElementById('commentCount').innerHTML = _commentCount;
+			if (xmlhttp2.responseText > 10) {
+				document.getElementById('commentPage').innerHTML = "Page :";
+				for (index=1; (index-1)*10 < _commentCount; index++) {
+					number = document.createElement('a');
+					number.className = 'numbers';
+					if (index == page)
+					number.className += ' active';
+					number.setAttribute('href', '#');
+					number.setAttribute('onclick', 'refreshComment('+_task_id+','+index+')');
+					number.appendChild(document.createTextNode(index));
+					document.getElementById('commentPage').innerHTML += number.outerHTML;
 				}
 			} else {
 				document.getElementById('commentPage').innerHTML = "";
 			}
 		}
-		xmlhttp.open("GET",api_loc+"countComment/"+task_id,true);
-		xmlhttp.send();
-	}	
+	}
+	xmlhttp2.open("GET",api_loc+"countComment/"+task_id,true);
+	xmlhttp2.send();
 }
 
 function refreshTask(user_id,category_id){
 	_category_id = category_id;
-	xmlhttp=new XMLHttpRequest();
+	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 			var parsedJSON = eval('('+xmlhttp.responseText+')');
@@ -542,7 +546,7 @@ function refreshTask(user_id,category_id){
 
 function refreshTask1(user_id,category_id){
 	_category_id = category_id;
-	xmlhttp=new XMLHttpRequest();
+	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 			var parsedJSON = eval('('+xmlhttp.responseText+')');
@@ -580,7 +584,7 @@ function refreshTask1(user_id,category_id){
 }
 
 function refreshCategory(user_id){
-	xmlhttp=new XMLHttpRequest();
+	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 			var parsedJSON = eval('('+xmlhttp.responseText+')');
@@ -616,7 +620,7 @@ function selectCategory(user_id,category_id) {
 
 function getSearchResult(q,mode,page){
 	_page = page+1;
-	xmlhttp=new XMLHttpRequest();
+	var xmlhttp=new XMLHttpRequest();
 	xmlhttp.onreadystatechange=function() {
 		if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 			var parsedJSON = eval('('+xmlhttp.responseText+')');
