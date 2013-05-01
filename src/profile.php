@@ -2,6 +2,11 @@
 	$title = 'Profile';
 	$login_permission = 1;
 	include 'inc/header.php';
+	if ($_GET['user_id'] == getUserId() && isset($_FILES["avatar"])) {
+		$file = "avatar/" . getUserId() . ".jpg";
+		unlink($file);
+		move_uploaded_file($_FILES["avatar"]["tmp_name"],$file);
+	}
 ?>
 
 		<script>
@@ -52,7 +57,7 @@
 				</div>
 				
 				<div id="edit-profile" class="editingprofile">
-					<form id="new_profile" action="#" method="post">
+					<form id="new_profile" action="#" method="post" enctype="multipart/form-data">
 						<div class="field">
 							<label>Full Name</label>
 							<input size="30" maxlength="50" name="name" id="name" type="text">
