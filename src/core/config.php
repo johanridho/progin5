@@ -162,6 +162,7 @@ class Db
 {
 	private static $db;
 	public static $api_loc = "http://progin001.ap01.aws.af.cm/api.php/";
+	public static $soap_loc = "http://progin001.ap01.aws.af.cm/soap.php/";
 	
 	public static function handler()
 	{
