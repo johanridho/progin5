@@ -10,7 +10,7 @@
 	$user_id = getUserId();
 	$tag = $post['tag'];
 	$client = new SoapClient(null, array(
-	  'location' => "http://localhost/IF3038-2013/src/core/soap.php",
+	  'location' => Db::$soap_loc,
       'uri'      => "urn://www.herong.home/req",
 	  'trace'    => 1 ));
 	$task_id = $client->__soapCall("newTask",array($user_id,$name,$deadline,$category_id,$assignee,$tag));

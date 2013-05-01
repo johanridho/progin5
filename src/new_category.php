@@ -4,14 +4,11 @@
 	$name = $post['name'];
 	$user_id = $_SESSION['user_id'];
 	$assignee = $post['assignee'];
-	var_dump($post);
-	$category_id = querynid('INSERT into category (name,user_id) values (:name,:user_id)',array(
-		'name' => $name,
-		'user_id' => $user_id
-		));
-	foreach($assignee as $assign) {
-		addAssignee($assign,null,$category_id);
-	}
+	$client = new SoapClient(null, array(
+	  'location' => Db::$soap_loc,
+      'uri'      => "urn://www.herong.home/req",
+	  'trace'    => 1 ));
+	$category_id = $client->__soapCall("newCategory",array($user_id,$name,$assignee));
 	var_dump($category_id);
 	header('Location: dashboard.php');
 ?>

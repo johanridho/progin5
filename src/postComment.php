@@ -6,7 +6,7 @@
 	$user_id = $_SESSION['user_id'];
 	$content = $post['content'];
 	$client = new SoapClient(null, array(
-	  'location' => "http://localhost/IF3038-2013/src/core/soap.php",
+	  'location' => Db::$soap_loc,
       'uri'      => "urn://www.herong.home/req",
 	  'trace'    => 1 ));
 

@@ -9,7 +9,7 @@
 	$birthdate = $post['tanggal_lahir'];
 	$email = $post['email'];
 	$client = new SoapClient(null, array(
-	  'location' => "http://localhost/IF3038-2013/src/core/soap.php",
+	  'location' => Db::$soap_loc,
       'uri'      => "urn://www.herong.home/req",
 	  'trace'    => 1 ));
 	$user_id = $client->__soapCall("register",array($username,$password,$name,$birthdate,$email));
