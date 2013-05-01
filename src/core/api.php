@@ -88,6 +88,9 @@
 			case 'deleteTask':
 				deleteTask($request[1]);
 				break;
+			case 'deleteCategory':
+				deleteCategory($request[1]);
+				break;
 			default:
 				echo json_encode(array("error" => "Unknown method!"));
 		}
