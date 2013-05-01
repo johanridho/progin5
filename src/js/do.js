@@ -471,7 +471,7 @@ function refreshComment(task_id,page){
 			document.getElementById('commentsList').innerHTML = "";
 			for (index=0; index < parsedJSON.length; index++) {
 				console.log(parsedJSON[index]);
-				comment = genComment(parsedJSON[index].user_id,parsedJSON[index].name,parsedJSON[index].content,parsedJSON[index].time,parsedJSON[index].comment_id);
+				comment = genComment(parsedJSON[index].user_id,parsedJSON[index].username,parsedJSON[index].content,parsedJSON[index].time,parsedJSON[index].comment_id);
 				document.getElementById('commentsList').innerHTML += comment.outerHTML;
 			}
 		}
