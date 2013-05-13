@@ -4,13 +4,14 @@
  */
 package server;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import encryption.RSA;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URL;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -52,16 +53,36 @@ public class Server {
         System.out.println(j.toString(4));
     }*/
     final private static int port = 1234;
+    public static PublicKey publicKey;
+    public static PrivateKey privateKey;
 
     public static void main(String args[]) {
         try {
+            // Check if the pair of keys are present else generate those.
+            if (!RSA.areKeysPresent()) {
+                // Method generates a pair of keys using the RSA algorithm and stores it
+                // in their respective files
+                RSA.generateKey();
+            }
+
+
+            ObjectInputStream inputStream = null;
+
+            // Encrypt the string using the public key
+            inputStream = new ObjectInputStream(new FileInputStream(RSA.PUBLIC_KEY_FILE));
+            publicKey = (PublicKey) inputStream.readObject();
+
+            // Decrypt the cipher text using the private key.
+            inputStream = new ObjectInputStream(new FileInputStream(RSA.PRIVATE_KEY_FILE));
+            privateKey = (PrivateKey) inputStream.readObject();
+            
             ServerSocket sSocket = new ServerSocket(port);
             while (true) {   // use infinte loop for accepting request        
                 Socket socket = sSocket.accept();
                 ChildServer cServer = new ChildServer(socket);
                 cServer.start();
             }
-        } catch (IOException ex) {
+        } catch (Exception ex) {
             System.out.println(ex);
         }
     }
