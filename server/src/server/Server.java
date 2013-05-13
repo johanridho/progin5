@@ -8,6 +8,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.URL;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,10 +45,24 @@ public class Server {
 
     /**
      * @param args the command line arguments
-     */
+     
     public static void main(String[] args) throws IOException, JSONException {
-        String hasil = http("GET","http://progin001.ap01.aws.af.cm/api.php/getTask/1");
+        String hasil = http("GET", "http://progin001.ap01.aws.af.cm/api.php/getTask/1");
         JSONArray j = new JSONArray(hasil);
         System.out.println(j.toString(4));
+    }*/
+    final private static int port = 1234;
+
+    public static void main(String args[]) {
+        try {
+            ServerSocket sSocket = new ServerSocket(port);
+            while (true) {   // use infinte loop for accepting request        
+                Socket socket = sSocket.accept();
+                ChildServer cServer = new ChildServer(socket);
+                cServer.start();
+            }
+        } catch (IOException ex) {
+            System.out.println(ex);
+        }
     }
 }
