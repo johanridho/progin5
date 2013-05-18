@@ -16,3 +16,4 @@ nb-configuration.xml
 *.ear
 /server/nbproject/private/
 /client/nbproject/private/
+/GUI/nbproject/private/
