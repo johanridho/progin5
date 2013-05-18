@@ -10,6 +10,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import encryption.*;
 import java.security.PublicKey;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -28,6 +30,7 @@ public class Client {
         out.write("###");
         out.newLine();
         out.flush();
+        lastSendTime = System.currentTimeMillis();
         System.out.println("sent");
     }
 
@@ -54,8 +57,9 @@ public class Client {
         JSONObject json = new JSONObject();
         json.put("method", "getpublickey");
 
-        if (s.isClosed())
+        if (!isConnected()) {
             reconnect();
+        }
         sendPacket(json);
         System.out.println("sent");
 
@@ -68,8 +72,9 @@ public class Client {
         json.put("method", "login");
         json.put("username", RSA.encrypt(username, key));
         json.put("password", RSA.encrypt(password, key));
-        if (s.isClosed())
+        if (!isConnected()) {
             reconnect();
+        }
         sendPacket(json);
 
         json = recvPacket();
@@ -85,8 +90,9 @@ public class Client {
         json.put("user_id", RSA.encrypt(user_id, key));
         json.put("timestamp", timestamp);
         json.put("token", token);
-        if (s.isClosed())
+        if (!isConnected()) {
             reconnect();
+        }
         sendPacket(json);
 
         json = recvPacket();
@@ -103,8 +109,9 @@ public class Client {
         json.put("timestamp", timestamp);
         json.put("task_id", task_id);
         json.put("token", token);
-        if (s.isClosed())
+        if (!isConnected()) {
             reconnect();
+        }
         sendPacket(json);
 
         json = recvPacket();
@@ -112,42 +119,61 @@ public class Client {
     }
 
     public static void reconnect() throws IOException {
+        System.out.println("Connecting...");
         s = new Socket("127.0.0.1", 1234);
-        s.setSoTimeout(5000);
+        s.setSoTimeout(timeout);
+        System.out.println("Connected!");
+
     }
     private static PublicKey key;
+    private static int timeout = 5000;
+    private static volatile long lastSendTime;
+
+    public static boolean isConnected() throws IOException {
+        if (s == null) {
+            return false;
+        } else if (s.isClosed()) {
+            return false;
+        } else {
+            if (lastSendTime + timeout < System.currentTimeMillis()) {
+                s.close();
+                return false;
+            } else {
+                return true;
+            }
+        }
+
+    }
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) throws IOException, JSONException {
-
-        s = new Socket("127.0.0.1", 1234);
-        s.setSoTimeout(5000);
-
         JSONObject json = null;
+        try {
+            json = reqGetPublicKey();
+            System.out.println(json.toString(4));
 
-        json = reqGetPublicKey();
-        System.out.println(json.toString(4));
+            key = (PublicKey) ObjectString.SToO((String) json.get("publickey"));
+            System.out.println(key);
 
-        key = (PublicKey) ObjectString.SToO((String) json.get("publickey"));
-        System.out.println(key);
+            json = reqLogin("admin", "admin");
+            System.out.println(json.toString(4));
 
-        json = reqLogin("admin", "admin");
-        System.out.println(json.toString(4));
+            String user_id = json.getString("user_id");
+            json = reqGetTask(user_id);
+            System.out.println(json.toString(4));
 
-        String user_id = json.getString("user_id");
-        json = reqGetTask(user_id);
-        System.out.println(json.toString(4));
+            json = reqNegateTask(user_id, "63");
+            System.out.println(json.toString(4));
 
-        json = reqNegateTask(user_id, "63");
-        System.out.println(json.toString(4));
+            json = reqGetTask(user_id);
+            System.out.println(json.toString(4));
 
-        json = reqGetTask(user_id);
-        System.out.println(json.toString(4));
-
-        System.out.println("closing socket");
-        s.close();
-
+            System.out.println("closing socket");
+            s.close();
+        } catch (IOException e) {
+            System.out.println("Cannot connecto to servero");
+        }
     }
 }
