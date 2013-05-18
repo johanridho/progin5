@@ -17,7 +17,7 @@ import java.security.PublicKey;
  */
 public class Client {
 
-    private static Socket s;
+    public static Socket s;
 
     public static void sendPacket(JSONObject json) throws IOException {
 

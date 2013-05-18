@@ -4,21 +4,22 @@
  */
 package gui;
 
+import java.io.IOException;
+import org.json.JSONException;
+
 /**
  *
  * @author user
  */
 
-import javax.swing.JButton;
-import javax.swing.JFrame;
-
 
 public class GUI {
 
-    	public static void main(String [] args){
+    	public static void main(String [] args) throws IOException, JSONException{
 		
 //		Login login = new Login();
 		Tugas tugas = new Tugas();
+//                Client.reqGetTask(null)
         }
     
 }
