@@ -1,14 +1,11 @@
-package gui;
+package client;
 
-import client.Client;
 import encryption.ObjectString;
 import java.awt.Color;
 import java.awt.GridLayout;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.Socket;
 import java.security.PublicKey;
 import org.json.JSONObject;
 
@@ -92,36 +89,33 @@ public class Tugas extends JFrame{
 
 /*--------------------- */     
 
-////        Client Client = new Client();
-//
-//                
-//        Socket s = new Socket("127.0.0.1", 1234);
-//        s.setSoTimeout(5000);
-//
-//        JSONObject json = null;
-//
-//        json = Client.reqGetPublicKey();
-//        System.out.println(json.toString(4));
-//
-//        PublicKey key = (PublicKey) ObjectString.SToO((String) json.get("publickey"));
-//        System.out.println(key);
-//
-//        json = Client.reqLogin("admin", "admin");
-//        System.out.println(json.toString(4));
-//
-//        String user_id = json.getString("user_id");
-//        json = Client.reqGetTask(user_id);
-//        System.out.println(json.toString(4));
-//
-////        json = reqNegateTask(user_id, "63");
-////        System.out.println(json.toString(4));
-//
-//        json = Client.reqGetTask(user_id);
-//        System.out.println(json.toString(4));
-//
-//        System.out.println("closing socket");
-//        s.close();
-//		
+	   JSONObject json = null;
+        try {
+            json = Client.reqGetPublicKey();
+            System.out.println(json.toString(4));
+
+            Client.key = (PublicKey) ObjectString.SToO((String) json.get("publickey"));
+            System.out.println(Client.key);
+
+            json = Client.reqLogin("admin", "admin");
+            System.out.println(json.toString(4));
+
+            String user_id = json.getString("user_id");
+            json = Client.reqGetTask(user_id);
+            System.out.println(json.toString(4));
+
+//            json = Client.reqNegateTask(user_id, "63");
+//            System.out.println(json.toString(4));
+
+            json = Client.reqGetTask(user_id);
+            System.out.println(json.toString(4));
+
+            System.out.println("closing socket");
+            Client.s.close();
+        } catch (IOException e) {
+            System.out.println("Cannot connecto to servero");
+        }
+		
 /*--------------------- */     		
 		
 
