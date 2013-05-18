@@ -8,11 +8,7 @@ import encryption.MD5;
 import encryption.ObjectString;
 import encryption.RSA;
 import java.io.*;
-import java.net.HttpURLConnection;
 import java.net.Socket;
-import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -139,7 +135,7 @@ class ChildServer extends Thread {
                     json = respNegateTask(json);
                 }
                 sendPacket(json);
-            } catch (IOException | JSONException ex) {
+            } catch (NullPointerException | IOException | JSONException ex) {
                 //Logger.getLogger(ChildServer.class.getName()).log(Level.SEVERE, null, ex);
                 try {
                     socket.close();

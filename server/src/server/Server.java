@@ -12,8 +12,6 @@ import java.net.Socket;
 import java.net.URL;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import org.json.JSONArray;
-import org.json.JSONException;
 
 /**
  *
