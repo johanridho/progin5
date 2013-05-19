@@ -179,6 +179,11 @@ public class Tugas extends JFrame{
                     pTugas.add(status);
 
                     JCheckBox statusTgs = new JCheckBox();
+                    if(doneTgs[i]==1){
+                        statusTgs.setSelected(true);
+                    }else{
+                        statusTgs.setSelected(false);
+                    }
                     pTugas.add(statusTgs);		
 
     //		judulTgs.setBounds(200, arg1, arg2, arg3)
