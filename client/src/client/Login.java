@@ -31,6 +31,14 @@ public class Login extends JFrame{
 		
 		addLoginForm();
 	}
+        
+        public String getUsername(){
+            return teksUsername.getText();
+        }
+        
+        public String getPwd(){
+            return  teksPwd.getText();
+        }
 	
 	public void addLoginForm(){		
 		JPanel pUtama = new JPanel(null);		
@@ -52,9 +60,14 @@ public class Login extends JFrame{
 			
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-                try {                    
-                    Tugas tugas = new Tugas();
+                try {                 
+//                    System.out.println(getUsername());
+//                    System.out.println(getPwd());
+                    
+                    Tugas tugas = new Tugas(getUsername(),getPwd());
                     dispose();
+                    
+                    
                 } catch (IOException ex) {
                     Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
                 } catch (JSONException ex) {

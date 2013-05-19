@@ -30,7 +30,7 @@ public class Tugas extends JFrame{
         private int[] userTgs;            
         private String[] deadTgs;
     
-	public Tugas() throws IOException, JSONException{
+	public Tugas(String usergan, String pwdgan) throws IOException, JSONException{
 		super();
 		setSize(1200, 800);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -41,7 +41,7 @@ public class Tugas extends JFrame{
 /*-------------------------------------------------------------------------------------- */     
 
 	   JSONObject json = null;
-           JSONObject isi = null;
+           
         try {
             json = Client.reqGetPublicKey();
 //            System.out.println(json.toString(4));
@@ -49,12 +49,13 @@ public class Tugas extends JFrame{
             Client.key = (PublicKey) ObjectString.SToO((String) json.get("publickey"));
 //            System.out.println(Client.key);
 
-            json = Client.reqLogin("admin", "admin");
+//            json = Client.reqLogin("admin", "admin");
 //            System.out.println(json.toString(4));
+            json = Client.reqLogin(usergan, pwdgan);                        
 
             String user_id = json.getString("user_id");
-            json = Client.reqGetTask(user_id);
-            isi = Client.reqGetTask(user_id);
+//            json = Client.reqGetTask(user_id);
+            JSONObject isi = Client.reqGetTask(user_id);
 //            System.out.println(json.toString(4));
             System.out.println("isigan---------------------------------------------------------------------------\n"
                                 +isi.toString(4)+
