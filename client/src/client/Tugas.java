@@ -33,8 +33,8 @@ public class Tugas extends JFrame{
         private String[] nameTgs;
         private int[] doneTgs;
         private int[] idTgs;
-        private int[] katTgs;
-        private int[] userTgs;            
+        private String[] katTgs;
+        private String[] userTgs;            
         private String[] deadTgs;
     
 	public Tugas(String usergan, String pwdgan) throws IOException, JSONException{
@@ -69,6 +69,8 @@ public class Tugas extends JFrame{
 
             user_id = json.getString("user_id");
             
+            
+            
             boolean isSukses = json.getBoolean("success");
 //            System.out.println("----------------------------------------awwwwwwwwwwwww");
 //            System.out.println(isSukses);
@@ -81,9 +83,9 @@ public class Tugas extends JFrame{
                 lastSync = getLastSyncFile(user_id);
                 
                 System.out.println("qqqqqqqqqqq");
-                System.out.println(lastSync);
-                System.out.println(lastSyncDB);
-                sinkronkan(user_id, pwdgan);
+//                System.out.println(lastSync);
+//                System.out.println(lastSyncDB);
+//                sinkronkan(user_id, pwdgan);
                 
             }else{
                 Writer writer = null;
@@ -118,18 +120,19 @@ public class Tugas extends JFrame{
             nameTgs = new String[arrayTask.length()];
             doneTgs = new int[arrayTask.length()];
             idTgs = new int[arrayTask.length()];
-            katTgs = new int[arrayTask.length()];
-            userTgs = new int[arrayTask.length()];            
+            katTgs = new String[arrayTask.length()];
+            userTgs = new String[arrayTask.length()];            
             deadTgs = new String[arrayTask.length()];
           
             for (int i=0; i<arrayTask.length();i++){
                 JSONObject tgs = arrayTask.getJSONObject(i);
+//                JSONArray arrayLagi = isi.getJSONArray("tags");
                 nameTgs[i] = tgs.getString("name");
                 tagsTgs[i] = tgs.getString("tags");
                 doneTgs[i] = tgs.getInt("done");
                 idTgs[i] = tgs.getInt("task_id");
-                katTgs[i] = tgs.getInt("category_id");
-                userTgs[i] = tgs.getInt("user_id");
+                katTgs[i] = tgs.getString("category");
+                userTgs[i] = tgs.getString("assignee");
                 deadTgs[i] = tgs.getString("deadline");
                 
 //                System.out.println("----------------------------"+i+""+i+""+i);
@@ -178,11 +181,32 @@ public class Tugas extends JFrame{
 				dispose();
 			}
 		});
+                
+                JButton sync = new JButton("Synchronize");
+		sync.setBounds(350, 10, 120, 30);		
+		pUtama.add(sync);
+                final String pwdgan2 = pwdgan;
+		sync.addActionListener(new ActionListener() {			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+                try {
+                    try {
+                        // TODO Auto-generated method stub
+                        System.out.println("oooooooooooo");
+                        sinkronkan(user_id, pwdgan2);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                } catch (JSONException ex) {
+                    Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
+                }
+			}
+		});
 	
                 //label daftar tugas
-		JLabel daftarTugas = new JLabel("Daftar Tugas");
-		daftarTugas.setBounds(350, 10, 100, 50);
-		pUtama.add(daftarTugas);
+//		JLabel daftarTugas = new JLabel("Daftar Tugas");
+//		daftarTugas.setBounds(350, 10, 100, 50);
+//		pUtama.add(daftarTugas);
 		
                 //loop bikin tugas
                 for(int i=0;i<arrayTask.length();i++){
@@ -243,23 +267,32 @@ public class Tugas extends JFrame{
                     statusTgs.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-//                                System.out.println("bitch");
-                            
-                            try {
-                                    JSONObject isi2 = Client.reqNegateTask(user_id, idTgs[iCheckbox]+"");
-                                } catch (JSONException ex) {
-                                    Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
-                                } catch (IOException ex) {
-                                    Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
-                                }
-                            
-                            if(doneTgs[iCheckbox]==0){
-                                doneTgs[iCheckbox]=1;                        
-                            }else{
-                                doneTgs[iCheckbox]=0;
+                    try {                        
+                            if(!Client.isConnected()){
+                                System.out.println("rekonek");
+                                Client.reconnect();
                             }
-                                String ss = idTgs[iCheckbox]+","+doneTgs[iCheckbox];
-                                tambahIsiFile(user_id, ss);
+                                System.out.println("konek sukses");
+                                try {
+                                        JSONObject isi2 = Client.reqNegateTask(user_id, idTgs[iCheckbox]+"");
+                                    } catch (JSONException ex) {
+                                        Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
+                                    } catch (IOException ex) {
+                                        Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
+                                    }
+
+                                if(doneTgs[iCheckbox]==0){
+                                    doneTgs[iCheckbox]=1;                        
+                                }else{
+                                    doneTgs[iCheckbox]=0;
+                                }
+                                    String ss = idTgs[iCheckbox]+","+doneTgs[iCheckbox];
+                                    tambahIsiFile(user_id, ss);
+                            
+                    } catch (IOException ex) {
+                        System.out.println("konek gagal");
+//                        Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
+                    }
                         }
                     });
                     
@@ -454,13 +487,22 @@ public class Tugas extends JFrame{
         }
         
         
-        public void sinkronkan(String file, String pwdgan) throws JSONException{            
-            if(lastSyncDB < getLastSyncFile(user_id)){
+        public void sinkronkan(String file, String pwdgan) throws JSONException, IOException{    
+            System.out.println("synccoy");
+            if(!Client.isConnected()){
+//                System.out.println("ttttttttt");
+                System.out.println("sync gagal, rekonek");
+                Client.reconnect();
+                
+            }
+//            else{
+//            if(lastSyncDB < getLastSyncFile(user_id)){
                 System.out.println("wwwwwwwwwwwww");
-                lastSyncDB = System.currentTimeMillis();
-                System.out.println(lastSyncDB);
-                lastSync=lastSyncDB;
-                System.out.println(lastSyncDB);
+//                lastSyncDB = System.currentTimeMillis();
+                lastSync = System.currentTimeMillis();
+//                System.out.println(lastSyncDB);
+//                lastSync=lastSyncDB;
+//                System.out.println(lastSyncDB);
                 System.out.println(lastSync);
                 setLastSyncFile(file, lastSync+"");
                 
@@ -492,11 +534,11 @@ public class Tugas extends JFrame{
                         idTgs2[i] = tgs.getInt("task_id");
                         System.out.println("bbbbbbbbbbbbbbbb");
                         System.out.println(doneTgs2[i]);
-                        if(doneTgs2[i]==getStatusFromFile(user_id, idTgs2[i]) || getStatusFromFile(user_id, idTgs2[i])==2){
-                            
-                        }else{
+//                        if(doneTgs2[i]==getStatusFromFile(user_id, idTgs2[i]) || getStatusFromFile(user_id, idTgs2[i])==2){
+//                            
+//                        }else{
                             JSONObject tempJson = Client.reqNegateTask(user_id, idTgs2[i]+"");
-                        }
+//                        }
                         
                     }//end for
                   
@@ -505,11 +547,11 @@ public class Tugas extends JFrame{
                     System.out.println("Cannot connecto to servero");
                 }
                 
+                System.out.println("sync sukses");
+//            }else{ //lastSync >= getLastSyncFile(user_id)
                 
-            }else{ //lastSync >= getLastSyncFile(user_id)
-                
-            }
-            
+//            }
+//            }//end connect            
         }//end sinkronkan
 	
 	
