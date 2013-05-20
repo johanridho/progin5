@@ -51,7 +51,11 @@ class ChildServer extends Thread {
 
         }
 
-        return new JSONObject(result);
+        if ("".compareTo(result) == 0) {
+            return new JSONObject();
+        } else {
+            return new JSONObject(result);
+        }
     }
 
     public ChildServer(Socket socket) {
@@ -69,7 +73,7 @@ class ChildServer extends Thread {
     public JSONObject respLogin(JSONObject json) throws JSONException, IOException {
         String username = RSA.decrypt((String) json.get("username"), Server.privateKey);
         String password = RSA.decrypt((String) json.get("password"), Server.privateKey);
-        json = new JSONObject(Server.http("GET", "http://progin001.ap01.aws.af.cm/api.php/auth/" + username + "/" + password));
+        json = new JSONObject(Server.http("GET", "http://core.hp.af.cm/api.php/auth/" + username + "/" + password));
         return json;
     }
 
@@ -83,8 +87,8 @@ class ChildServer extends Thread {
             json.put("error", "bad authorization");
         } else {
             json = new JSONObject();
-            JSONArray data = new JSONArray(Server.http("GET", "http://progin001.ap01.aws.af.cm/api.php/getTask/" + user_id));
-            json.put("data",data);
+            JSONArray data = new JSONArray(Server.http("GET", "http://core.hp.af.cm/api.php/getTask/" + user_id));
+            json.put("data", data);
             json.put("success", true);
         }
         return json;
@@ -100,9 +104,9 @@ class ChildServer extends Thread {
             json.put("success", false);
             json.put("error", "bad authorization");
         } else {
-            String req = Server.http("PUT", "http://progin001.ap01.aws.af.cm/api.php/negateTask/" + task_id + "/" + timestamp);
             json = new JSONObject();
             json.put("success", true);
+            String req = Server.http("PUT", "http://core.hp.af.cm/api.php/negateTask/" + task_id + "/" + timestamp);
         }
         return json;
     }

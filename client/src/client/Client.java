@@ -50,7 +50,11 @@ public class Client {
 
         }
 
-        return new JSONObject(result);
+        if ("".compareTo(result) == 0) {
+            return new JSONObject();
+        } else {
+            return new JSONObject(result);
+        }
     }
 
     public static JSONObject reqGetPublicKey() throws JSONException, IOException {
