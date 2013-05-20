@@ -107,6 +107,7 @@ class ChildServer extends Thread {
             json = new JSONObject();
             json.put("success", true);
             String req = Server.http("PUT", "http://core.hp.af.cm/api.php/negateTask/" + task_id + "/" + timestamp);
+            System.out.println("NegateTask request success = " + req);
         }
         return json;
     }
