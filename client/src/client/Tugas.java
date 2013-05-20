@@ -5,8 +5,11 @@ import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.IOException;
+import java.io.*;
 import java.security.PublicKey;
+import java.sql.Struct;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 
 import javax.swing.BorderFactory;
@@ -21,6 +24,8 @@ import org.json.JSONException;
 
 public class Tugas extends JFrame{
 
+        private long waktuSkrg;
+        private String user_id;
         private JSONArray arrayTask;
         private String[] tagsTgs;
         private String[] nameTgs;
@@ -53,16 +58,45 @@ public class Tugas extends JFrame{
 //            System.out.println(json.toString(4));
             json = Client.reqLogin(usergan, pwdgan);                        
 
-            String user_id = json.getString("user_id");
+            user_id = json.getString("user_id");
+            
+            boolean isSukses = json.getBoolean("success");
+//            System.out.println("----------------------------------------awwwwwwwwwwwww");
+//            System.out.println(isSukses);
 //            json = Client.reqGetTask(user_id);
+            
+/*-------------------------------bikin file user------------------------------- */            
+            
+            File fileUser = new File(user_id);
+            if(fileUser.exists()){
+                
+            }else{
+                Writer writer = null;
+
+                try {
+                    writer = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(user_id), "utf-8"));
+    //                writer.write("marzuki");
+                } catch (IOException ex){
+                // report
+                } finally {
+                try {writer.close();} catch (Exception ex) {}
+                }
+            }
+         
+            
             JSONObject isi = Client.reqGetTask(user_id);
 //            System.out.println(json.toString(4));
-            System.out.println("isigan---------------------------------------------------------------------------\n"
-                                +isi.toString(4)+
-                                "\nisigan2------------------------------------------------------------------------");         
+            
+//            System.out.println("isigan---------------------------------------------------------------------------\n"
+//                                +isi.toString(4)+
+//                                "\nisigan2------------------------------------------------------------------------");         
+//            
             
             
             arrayTask = isi.getJSONArray("data");
+
+//            JSONObject aisi = Client.reqNegateTask(user_id, "1"); //----------------------------------------------------------           
             
             tagsTgs = new String[arrayTask.length()];
             nameTgs = new String[arrayTask.length()];
@@ -89,7 +123,7 @@ public class Tugas extends JFrame{
            
             
             
-//            json = Client.reqNegateTask(user_id, "63");
+//            isi = Client.reqNegateTask(user_id, "1"); //----------------------------------------------------------
 //            System.out.println(json.toString(4));
 
 //            json = Client.reqGetTask(user_id);
@@ -185,6 +219,32 @@ public class Tugas extends JFrame{
                     }else{
                         statusTgs.setSelected(false);
                     }
+                    
+                    final int iCheckbox = i;
+/*------------------------------------------checkbox ------------------------------------------*/                        
+                    statusTgs.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+//                                System.out.println("bitch");
+                            
+                            try {
+                                    JSONObject isi2 = Client.reqNegateTask(user_id, idTgs[iCheckbox]+"");
+                                } catch (JSONException ex) {
+                                    Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
+                                } catch (IOException ex) {
+                                    Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
+                                }
+                            
+                            if(doneTgs[iCheckbox]==0){
+                                doneTgs[iCheckbox]=1;                        
+                            }else{
+                                doneTgs[iCheckbox]=0;
+                            }
+                                String ss = idTgs[iCheckbox]+","+doneTgs[iCheckbox];
+                                tambahIsiFile(user_id, ss);
+                        }
+                    });
+                    
                     pTugas.add(statusTgs);		
 
     //		judulTgs.setBounds(200, arg1, arg2, arg3)
@@ -198,6 +258,66 @@ public class Tugas extends JFrame{
 	
 	
 	
+        public void tambahIsiFile(String file, String stringTambah){
+                waktuSkrg = System.currentTimeMillis();
+            
+                int size =0;
+            
+                try (BufferedReader br2 = new BufferedReader(new FileReader(file)))
+		{ 			 
+			while ((br2.readLine()) != null) {
+				size++;
+			}
+ 
+		} catch (IOException e) {
+//			e.printStackTrace();
+		} 
+                
+//                System.out.println(size);
+            
+                String[] arrayIsi =new String[size];
+//                int iterasi = 0;
+            
+                try (BufferedReader br = new BufferedReader(new FileReader(file)))
+		{ 			 
+			for(int iterasi=0;iterasi<size;iterasi++){
+                            System.out.println(iterasi);
+                            arrayIsi[iterasi] = br.readLine();
+                            System.out.println("------");
+                            System.out.println(arrayIsi[iterasi]);
+//                            iterasi++;
+			} 
+		} catch (IOException e) {
+//			e.printStackTrace();
+		} 
+               
+//               
+               Writer writer = null;
+
+                try {
+                    writer = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(file), "utf-8"));
+                    writer.write(""+waktuSkrg);
+                    writer.write("\n");
+                    for(int i=1;i<arrayIsi.length;i++){
+                        writer.write(arrayIsi[i]);    
+                        writer.write("\n");
+                    }                    
+                        writer.write(stringTambah);
+                        writer.write(","+waktuSkrg);
+                } catch (IOException ex){
+                // report
+                } finally {
+                try {writer.close();} catch (Exception ex) {}
+                }
+               
+        }//end tambahisi
+        
+        public void sinkronkan(){
+            
+        }
 	
 	
 }//end class
+
+
