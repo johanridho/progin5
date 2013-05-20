@@ -30,7 +30,7 @@
 				assign($request[1],$request[2],$request[3],$request[4]);
 				break;
 			case 'negateTask':
-				negateTask($request[1]);
+				negateTask($request[1],$request[2]);
 				break;
 			default:
 				echo json_encode(array("error" => "Unknown method!"));
