@@ -25,7 +25,16 @@ public class Server {
                 (HttpURLConnection) url.openConnection();
 
         conn.setRequestMethod(method);
+        if ("put".compareToIgnoreCase(method) == 0) {
+            conn.setDoOutput(true);
+            OutputStreamWriter out = new OutputStreamWriter(
+                conn.getOutputStream());
+            out.write("Hello world");
+            out.close();
+        }
         if (conn.getResponseCode() != 200) {
+            System.out.println("exception");
+            System.out.println(conn.getResponseMessage());
             throw new IOException(conn.getResponseMessage());
         }
         StringBuilder sb;
@@ -41,15 +50,15 @@ public class Server {
         conn.disconnect();
         return sb.toString();
     }
-
     /**
      * @param args the command line arguments
-     
-    public static void main(String[] args) throws IOException, JSONException {
-        String hasil = http("GET", "http://progin001.ap01.aws.af.cm/api.php/getTask/1");
-        JSONArray j = new JSONArray(hasil);
-        System.out.println(j.toString(4));
-    }*/
+     *
+     * public static void main(String[] args) throws IOException, JSONException
+     * { String hasil = http("GET",
+     * "http://progin001.ap01.aws.af.cm/api.php/getTask/1"); JSONArray j = new
+     * JSONArray(hasil); System.out.println(j.toString(4));
+    }
+     */
     final private static int port = 1234;
     public static PublicKey publicKey;
     public static PrivateKey privateKey;
@@ -73,7 +82,7 @@ public class Server {
             // Decrypt the cipher text using the private key.
             inputStream = new ObjectInputStream(new FileInputStream(RSA.PRIVATE_KEY_FILE));
             privateKey = (PrivateKey) inputStream.readObject();
-            
+
             ServerSocket sSocket = new ServerSocket(port);
             while (true) {   // use infinte loop for accepting request        
                 Socket socket = sSocket.accept();
