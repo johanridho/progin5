@@ -100,7 +100,7 @@ class ChildServer extends Thread {
             json.put("success", false);
             json.put("error", "bad authorization");
         } else {
-            String req = Server.http("PUT", "http://progin001.ap01.aws.af.cm/api.php/negateTask/" + task_id);
+            String req = Server.http("PUT", "http://progin001.ap01.aws.af.cm/api.php/negateTask/" + task_id + "/" + timestamp);
             json = new JSONObject();
             json.put("success", true);
         }
