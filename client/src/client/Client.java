@@ -148,32 +148,32 @@ public class Client {
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) throws IOException, JSONException {
-        JSONObject json = null;
-        try {
-            json = reqGetPublicKey();
-            System.out.println(json.toString(4));
-
-            key = (PublicKey) ObjectString.SToO((String) json.get("publickey"));
-            System.out.println(key);
-
-            json = reqLogin("admin", "admin");
-            System.out.println(json.toString(4));
-
-            String user_id = json.getString("user_id");
-            json = reqGetTask(user_id);
-            System.out.println(json.toString(4));
-
-            json = reqNegateTask(user_id, "63");
-            System.out.println(json.toString(4));
-
-            json = reqGetTask(user_id);
-            System.out.println(json.toString(4));
-
-            System.out.println("closing socket");
-            s.close();
-        } catch (IOException e) {
-            System.out.println("Cannot connecto to servero");
-        }
-    }
+//    public static void main(String[] args) throws IOException, JSONException {
+//        JSONObject json = null;
+//        try {
+//            json = reqGetPublicKey();
+//            System.out.println(json.toString(4));
+//
+//            key = (PublicKey) ObjectString.SToO((String) json.get("publickey"));
+//            System.out.println(key);
+//
+//            json = reqLogin("admin", "admin");
+//            System.out.println(json.toString(4));
+//
+//            String user_id = json.getString("user_id");
+//            json = reqGetTask(user_id);
+//            System.out.println(json.toString(4));
+//
+//            json = reqNegateTask(user_id, "63");
+//            System.out.println(json.toString(4));
+//
+//            json = reqGetTask(user_id);
+//            System.out.println(json.toString(4));
+//
+//            System.out.println("closing socket");
+//            s.close();
+//        } catch (IOException e) {
+//            System.out.println("Cannot connecto to servero");
+//        }
+//    }
 }

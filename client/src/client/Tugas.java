@@ -25,6 +25,8 @@ import org.json.JSONException;
 public class Tugas extends JFrame{
 
         private long waktuSkrg;
+        private long lastSync;
+        private long lastSyncDB;
         private String user_id;
         private JSONArray arrayTask;
         private String[] tagsTgs;
@@ -36,13 +38,20 @@ public class Tugas extends JFrame{
         private String[] deadTgs;
     
 	public Tugas(String usergan, String pwdgan) throws IOException, JSONException{
-		super();
-		setSize(1200, 800);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-//		setDefaultLookAndFeelDecorated(true);
-
+            super();
+            setSize(1200, 800);
+            setDefaultCloseOperation(EXIT_ON_CLOSE);
+//		setDefaultLookAndFeelDecorated(true);            
                 
-                
+//            System.out.println("asdasdasd");
+//            System.out.println(getLastWaktu("1"));
+//            System.out.println(getLastSyncFile("1"));
+//            setLastSyncFile("1", "33");
+//            System.out.println(getStatusFromFile("1", 18));
+            
+            lastSyncDB = 2;
+            
+            
 /*-------------------------------------------------------------------------------------- */     
 
 	   JSONObject json = null;
@@ -68,7 +77,13 @@ public class Tugas extends JFrame{
 /*-------------------------------bikin file user------------------------------- */            
             
             File fileUser = new File(user_id);
-            if(fileUser.exists()){
+            if(fileUser.exists()){                
+                lastSync = getLastSyncFile(user_id);
+                
+                System.out.println("qqqqqqqqqqq");
+                System.out.println(lastSync);
+                System.out.println(lastSyncDB);
+                sinkronkan(user_id, pwdgan);
                 
             }else{
                 Writer writer = null;
@@ -76,21 +91,22 @@ public class Tugas extends JFrame{
                 try {
                     writer = new BufferedWriter(new OutputStreamWriter(
                         new FileOutputStream(user_id), "utf-8"));
-    //                writer.write("marzuki");
+                    writer.write("0");
                 } catch (IOException ex){
                 // report
                 } finally {
                 try {writer.close();} catch (Exception ex) {}
                 }
+                lastSync = 0;
             }
          
             
             JSONObject isi = Client.reqGetTask(user_id);
 //            System.out.println(json.toString(4));
             
-//            System.out.println("isigan---------------------------------------------------------------------------\n"
-//                                +isi.toString(4)+
-//                                "\nisigan2------------------------------------------------------------------------");         
+            System.out.println("isigan---------------------------------------------------------------------------\n"
+                                +isi.toString(4)+
+                                "\nisigan2------------------------------------------------------------------------");         
 //            
             
             
@@ -135,6 +151,8 @@ public class Tugas extends JFrame{
             System.out.println("Cannot connecto to servero");
         }
 		
+        
+        
 /*-------------------------------------------------------------------------------------- */     
                 
                 
@@ -297,7 +315,7 @@ public class Tugas extends JFrame{
                 try {
                     writer = new BufferedWriter(new OutputStreamWriter(
                         new FileOutputStream(file), "utf-8"));
-                    writer.write(""+waktuSkrg);
+                    writer.write(""+lastSync);
                     writer.write("\n");
                     for(int i=1;i<arrayIsi.length;i++){
                         writer.write(arrayIsi[i]);    
@@ -313,11 +331,190 @@ public class Tugas extends JFrame{
                
         }//end tambahisi
         
-        public void sinkronkan(){
+        
+        public Long getLastWaktu(String file){
+            String lastLine="";
+            String temp;
+            try (BufferedReader br = new BufferedReader(new FileReader(file)))
+		{ 			 
+                    while((temp = br.readLine())!=null){                        
+                        if(temp!=null){
+                            lastLine = temp;                        
+                        }else{
+                            lastLine = "0";
+                        }                        
+                    }
+                    
+		} catch (IOException e) {
+//			e.printStackTrace();
+		} 
             
+            String [] arrayTemp = lastLine.split(",");
+            
+            return Long.parseLong(arrayTemp[2]) ;
+            
+        }//end getlast
+        
+        public Long getLastSyncFile(String file){
+            String lastLine="";
+            try (BufferedReader br = new BufferedReader(new FileReader(file)))
+		{ 			     
+//                    if(br.readLine()==null){
+//                        lastLine = "0";
+//                    }else{
+                        lastLine = br.readLine();                                                                
+//                    }
+                    
+		} catch (IOException e) {
+//			e.printStackTrace();
+		}                         
+            
+            return Long.parseLong(lastLine) ;
         }
+        
+        
+        public void setLastSyncFile(String file, String waktuSync){
+            int size =0;
+            
+                try (BufferedReader br2 = new BufferedReader(new FileReader(file)))
+		{ 			 
+			while ((br2.readLine()) != null) {
+				size++;
+			}
+ 
+		} catch (IOException e) {
+//			e.printStackTrace();
+		} 
+                
+//                System.out.println(size);
+            
+                String[] arrayIsi =new String[size];
+//                int iterasi = 0;
+            
+                try (BufferedReader br = new BufferedReader(new FileReader(file)))
+		{ 			 
+			for(int iterasi=0;iterasi<size;iterasi++){
+//                            System.out.println(iterasi);
+                            arrayIsi[iterasi] = br.readLine();
+//                            System.out.println("------");
+//                            System.out.println(arrayIsi[iterasi]);
+//                            iterasi++;
+			} 
+		} catch (IOException e) {
+//			e.printStackTrace();
+		} 
+               
+//               
+               Writer writer = null;
+
+                try {
+                    writer = new BufferedWriter(new OutputStreamWriter(
+                        new FileOutputStream(file), "utf-8"));
+                    writer.write(""+waktuSync);
+                    writer.write("\n");
+                    for(int i=1;i<arrayIsi.length;i++){
+                        writer.write(arrayIsi[i]);    
+                        writer.write("\n");
+                    }                                                                    
+                } catch (IOException ex){
+                // report
+                } finally {
+                try {writer.close();} catch (Exception ex) {}
+                }
+        }
+        
+        public int getStatusFromFile(String userIdFile, int idTgsFile){
+            String stat="2";
+            String temp;
+            String[] arraystat;
+            int a = 0;
+            try (BufferedReader br = new BufferedReader(new FileReader(userIdFile)))
+		{ 			                     
+                    while((temp=br.readLine())!=null){                        
+//                        System.out.println(temp);
+                        if(temp!=null && a>=1){
+//                            System.out.println("tes");
+                            arraystat = temp.split(",");
+                            if(arraystat[0].equals(idTgsFile+"")){
+                                stat = arraystat[1];
+                            }
+                            
+                        }else{
+                            stat = "2";
+                        }                        
+                        a++;
+                    }
+                    
+		} catch (IOException e) {
+//			e.printStackTrace();
+		} 
+            
+            
+            return Integer.parseInt(stat);
+        }
+        
+        
+        public void sinkronkan(String file, String pwdgan) throws JSONException{            
+            if(lastSyncDB < getLastSyncFile(user_id)){
+                System.out.println("wwwwwwwwwwwww");
+                lastSyncDB = System.currentTimeMillis();
+                System.out.println(lastSyncDB);
+                lastSync=lastSyncDB;
+                System.out.println(lastSyncDB);
+                System.out.println(lastSync);
+                setLastSyncFile(file, lastSync+"");
+                
+                JSONObject json = null;
+
+                try {
+                    json = Client.reqGetPublicKey();        
+
+                    Client.key = (PublicKey) ObjectString.SToO((String) json.get("publickey"));
+
+                    json = Client.reqLogin(user_id, pwdgan);                                             
+
+                    JSONObject isi = Client.reqGetTask(user_id);
+
+//                    System.out.println("isigan---------------------------------------------------------------------------\n"
+//                                        +isi.toString(4)+
+//                                        "\nisigan2------------------------------------------------------------------------");         
+                    
+                    JSONArray arrayTask2 = isi.getJSONArray("data");
+
+        //            JSONObject aisi = Client.reqNegateTask(user_id, "1"); //----------------------------------------------------------           
+                 
+                    int[] doneTgs2 = new int[arrayTask2.length()];                    
+                    int[] idTgs2 = new int[arrayTask2.length()];   
+
+                    for (int i=0; i<arrayTask2.length();i++){
+                        JSONObject tgs = arrayTask2.getJSONObject(i);                       
+                        doneTgs2[i] = tgs.getInt("done");  
+                        idTgs2[i] = tgs.getInt("task_id");
+                        System.out.println("bbbbbbbbbbbbbbbb");
+                        System.out.println(doneTgs2[i]);
+                        if(doneTgs2[i]==getStatusFromFile(user_id, idTgs2[i]) || getStatusFromFile(user_id, idTgs2[i])==2){
+                            
+                        }else{
+                            JSONObject tempJson = Client.reqNegateTask(user_id, idTgs2[i]+"");
+                        }
+                        
+                    }//end for
+                  
+                    Client.s.close();
+                } catch (IOException e) {
+                    System.out.println("Cannot connecto to servero");
+                }
+                
+                
+            }else{ //lastSync >= getLastSyncFile(user_id)
+                
+            }
+            
+        }//end sinkronkan
 	
 	
+        
+        
 }//end class
 
 
