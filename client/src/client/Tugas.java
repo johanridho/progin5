@@ -36,7 +36,16 @@ public class Tugas extends JFrame{
         private String[] katTgs;
         private String[] userTgs;            
         private String[] deadTgs;
-    
+        
+        
+        private JLabel[] judulTgs;        
+        private JLabel[] LabelIdTgs;
+        private JLabel[] userIDTgs;
+        private JLabel[] kategoriTgs;
+        private JLabel[] deadlineTgs;
+        private JLabel[] tagTgs;
+        private JCheckBox[] statusTgs;
+        
 	public Tugas(String usergan, String pwdgan) throws IOException, JSONException{
             super();
             setSize(1200, 800);
@@ -49,7 +58,9 @@ public class Tugas extends JFrame{
 //            setLastSyncFile("1", "33");
 //            System.out.println(getStatusFromFile("1", 18));
             
-            lastSyncDB = 2;
+//            lastSyncDB = 2;
+            
+            
             
             
 /*-------------------------------------------------------------------------------------- */     
@@ -114,7 +125,14 @@ public class Tugas extends JFrame{
             
             arrayTask = isi.getJSONArray("data");
 
-//            JSONObject aisi = Client.reqNegateTask(user_id, "1"); //----------------------------------------------------------           
+            judulTgs= new JLabel[arrayTask.length()];  
+            LabelIdTgs= new JLabel[arrayTask.length()];  
+            userIDTgs= new JLabel[arrayTask.length()];  
+            kategoriTgs= new JLabel[arrayTask.length()];  
+            deadlineTgs= new JLabel[arrayTask.length()];  
+            tagTgs= new JLabel[arrayTask.length()];  
+            statusTgs = new JCheckBox[arrayTask.length()];
+
             
             tagsTgs = new String[arrayTask.length()];
             nameTgs = new String[arrayTask.length()];
@@ -219,52 +237,52 @@ public class Tugas extends JFrame{
                     JLabel judul = new JLabel("Judul :");
                     pTugas.add(judul);
 
-                    JLabel judulTgs = new JLabel(nameTgs[i]);
-                    pTugas.add(judulTgs);
+                    judulTgs[i] = new JLabel(nameTgs[i]);
+                    pTugas.add(judulTgs[i]);
                     
                     JLabel id = new JLabel("ID tugas :");
-                    pTugas.add(id);
+                    pTugas.add(id);                                         
                     
-                    JLabel LabelIdTgs = new JLabel(idTgs[i]+"");
-                    pTugas.add(LabelIdTgs);
+                    LabelIdTgs[i] = new JLabel(idTgs[i]+"");
+                    pTugas.add(LabelIdTgs[i]);
                     
                     JLabel userID = new JLabel("ID user :");
                     pTugas.add(userID);
                     
-                    JLabel userIDTgs = new JLabel(userTgs[i]+"");
-                    pTugas.add(userIDTgs);
+                    userIDTgs[i] = new JLabel(userTgs[i]+"");
+                    pTugas.add(userIDTgs[i]);
 
                     JLabel kategori = new JLabel("Kategori :");
                     pTugas.add(kategori);		
 
-                    JLabel kategoriTgs = new JLabel(""+katTgs[i]);
-                    pTugas.add(kategoriTgs);
+                    kategoriTgs[i] = new JLabel(""+katTgs[i]);
+                    pTugas.add(kategoriTgs[i]);
 
                     JLabel deadline = new JLabel("Deadline :");
                     pTugas.add(deadline);
 
-                    JLabel deadlineTgs = new JLabel(deadTgs[i]);
-                    pTugas.add(deadlineTgs);
+                    deadlineTgs[i] = new JLabel(deadTgs[i]);
+                    pTugas.add(deadlineTgs[i]);
 
                     JLabel tag = new JLabel("Tag :");
                     pTugas.add(tag);
 
-                    JLabel tagTgs = new JLabel(tagsTgs[i]);
-                    pTugas.add(tagTgs);
+                    tagTgs[i] = new JLabel(tagsTgs[i]);
+                    pTugas.add(tagTgs[i]);
 
                     JLabel status = new JLabel("Status :");
                     pTugas.add(status);
 
-                    JCheckBox statusTgs = new JCheckBox();
+                    statusTgs[i] = new JCheckBox();
                     if(doneTgs[i]==1){
-                        statusTgs.setSelected(true);
+                        statusTgs[i].setSelected(true);
                     }else{
-                        statusTgs.setSelected(false);
+                        statusTgs[i].setSelected(false);
                     }
                     
                     final int iCheckbox = i;
 /*------------------------------------------checkbox ------------------------------------------*/                        
-                    statusTgs.addActionListener(new ActionListener() {
+                    statusTgs[i].addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                     try {                        
@@ -296,14 +314,15 @@ public class Tugas extends JFrame{
                         }
                     });
                     
-                    pTugas.add(statusTgs);		
+                    pTugas.add(statusTgs[i]);		
 
     //		judulTgs.setBounds(200, arg1, arg2, arg3)
                 
                 }//end for
 
-        
+         
 		setVisible(true);
+                
 		
 	}//end ctor
 	
@@ -489,6 +508,7 @@ public class Tugas extends JFrame{
         
         public void sinkronkan(String file, String pwdgan) throws JSONException, IOException{    
             System.out.println("synccoy");
+           
             if(!Client.isConnected()){
 //                System.out.println("ttttttttt");
                 System.out.println("sync gagal, rekonek");
@@ -524,29 +544,70 @@ public class Tugas extends JFrame{
                     JSONArray arrayTask2 = isi.getJSONArray("data");
 
         //            JSONObject aisi = Client.reqNegateTask(user_id, "1"); //----------------------------------------------------------           
-                 
+                    String[] tagsTgs2 = new String[arrayTask2.length()];
+                    String[] nameTgs2 = new String[arrayTask2.length()];                                     
+                    String[] katTgs2 = new String[arrayTask2.length()];
+                    String[] userTgs2 = new String[arrayTask2.length()];            
+                    String[] deadTgs2 = new String[arrayTask2.length()];
                     int[] doneTgs2 = new int[arrayTask2.length()];                    
                     int[] idTgs2 = new int[arrayTask2.length()];   
 
                     for (int i=0; i<arrayTask2.length();i++){
                         JSONObject tgs = arrayTask2.getJSONObject(i);                       
                         doneTgs2[i] = tgs.getInt("done");  
-                        idTgs2[i] = tgs.getInt("task_id");
-                        System.out.println("bbbbbbbbbbbbbbbb");
-                        System.out.println(doneTgs2[i]);
-//                        if(doneTgs2[i]==getStatusFromFile(user_id, idTgs2[i]) || getStatusFromFile(user_id, idTgs2[i])==2){
-//                            
-//                        }else{
+                        idTgs2[i] = tgs.getInt("task_id");                        
+//                        System.out.println("bbbbbbbbbbbbbbbb");
+//                        System.out.println(doneTgs2[i]);
+                        if(doneTgs2[i]==getStatusFromFile(user_id, idTgs2[i]) || getStatusFromFile(user_id, idTgs2[i])==2){
+                            
+                        }else{
                             JSONObject tempJson = Client.reqNegateTask(user_id, idTgs2[i]+"");
-//                        }
+                        }
+                   }//end for     
+//                        
+                    json = Client.reqGetPublicKey();        
+
+                    Client.key = (PublicKey) ObjectString.SToO((String) json.get("publickey"));
+
+                    json = Client.reqLogin(user_id, pwdgan);                                             
+
+                    isi = Client.reqGetTask(user_id);
+                            
+                    arrayTask2 = isi.getJSONArray("data");
+//                    
+                    for (int i=0;i<arrayTask2.length();i++){
+                        JSONObject tgs = arrayTask2.getJSONObject(i);                       
+                        doneTgs2[i] = tgs.getInt("done");  
+//                        idTgs2[i] = tgs.getInt("task_id");
+//                        nameTgs2[i] = tgs.getString("name");
+//                        tagsTgs2[i] = tgs.getString("tags");                        
+//                        katTgs2[i] = tgs.getString("category");
+//                        userTgs2[i] = tgs.getString("assignee");
+//                        deadTgs2[i] = tgs.getString("deadline");
                         
+//                        judulTgs[i].setText("hj");        
+//                        LabelIdTgs[i].setText(idTgs2[i]+"");
+//                        userIDTgs[i].setText(userTgs2[i]);
+//                        kategoriTgs[i].setText(katTgs2[i]);
+//                        deadlineTgs[i].setText(deadTgs2[i]);
+//                        tagTgs[i].setText(tagsTgs2[i]);
+                        if(doneTgs2[i]==1){
+                            statusTgs[i].setSelected(true);
+                        }else{
+                            statusTgs[i].setSelected(false);
+                        }
                     }//end for
                   
                     Client.s.close();
                 } catch (IOException e) {
                     System.out.println("Cannot connecto to servero");
                 }
-                
+               
+//                judulTgs[0].setVisible(false);
+//               judulTgs[0].setText("asd");        
+//               judulTgs[0].setVisible(true);
+//               setVisible(true);
+//                 judulTgs[0].setText("asd");     
                 System.out.println("sync sukses");
 //            }else{ //lastSync >= getLastSyncFile(user_id)
                 
