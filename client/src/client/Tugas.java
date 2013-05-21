@@ -149,11 +149,22 @@ public class Tugas extends JFrame{
           
             for (int i=0; i<arrayTask.length();i++){
                 JSONObject tgs = arrayTask.getJSONObject(i);
-//                JSONArray arraytemp = tgs.getJSONArray("attachment");
-//                for(int j=0;j<arraytemp.length();j++){
-//                    JSONObject temp = arraytemp.getJSONObject(j);
-//                    attTgs[i] = temp.getString("filename");
+                JSONArray arraytemp = tgs.getJSONArray("attachment");
+                String[] apake=new String[arraytemp.length()];
+                for(int j=0;j<arraytemp.length();j++){
+                    JSONObject temp = arraytemp.getJSONObject(j);
+                    apake[j] = temp.getString("filename");
+                    attTgs[i]+=apake[j]+",";
+                }
+                
+//                JSONArray arraytemp2 = tgs.getJSONArray("tags");
+//                String[] apake2=new String[arraytemp2.length()];
+//                for(int jj=0;jj<arraytemp2.length();jj++){
+//                    JSONObject temp2 = arraytemp2.getJSONObject(jj);
+//                    apake[jj] = temp2.getString("name");
+//                    tagsTgs[i]+=apake[jj]+",";
 //                }
+                
                 nameTgs[i] = tgs.getString("name");
                 tagsTgs[i] = tgs.getString("tags");
                 doneTgs[i] = tgs.getInt("done");
@@ -161,7 +172,7 @@ public class Tugas extends JFrame{
                 katTgs[i] = tgs.getString("category");
                 userTgs[i] = tgs.getString("assignee");
                 deadTgs[i] = tgs.getString("deadline");
-                attTgs[i] = tgs.getString("attachment");
+//                attTgs[i] = ;
                 
                 
 //                System.out.println("----------------------------"+i+""+i+""+i);
