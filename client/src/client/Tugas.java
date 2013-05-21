@@ -36,6 +36,7 @@ public class Tugas extends JFrame{
         private String[] katTgs;
         private String[] userTgs;            
         private String[] deadTgs;
+        private String[] attTgs;
         
         
         private JLabel[] judulTgs;        
@@ -141,10 +142,15 @@ public class Tugas extends JFrame{
             katTgs = new String[arrayTask.length()];
             userTgs = new String[arrayTask.length()];            
             deadTgs = new String[arrayTask.length()];
+            attTgs = new String[arrayTask.length()];
           
             for (int i=0; i<arrayTask.length();i++){
                 JSONObject tgs = arrayTask.getJSONObject(i);
-//                JSONArray arrayLagi = isi.getJSONArray("tags");
+//                JSONArray arraytemp = tgs.getJSONArray("attachment");
+//                for(int j=0;j<arraytemp.length();j++){
+//                    JSONObject temp = arraytemp.getJSONObject(j);
+//                    attTgs[i] = temp.getString("filename");
+//                }
                 nameTgs[i] = tgs.getString("name");
                 tagsTgs[i] = tgs.getString("tags");
                 doneTgs[i] = tgs.getInt("done");
@@ -152,6 +158,8 @@ public class Tugas extends JFrame{
                 katTgs[i] = tgs.getString("category");
                 userTgs[i] = tgs.getString("assignee");
                 deadTgs[i] = tgs.getString("deadline");
+                attTgs[i] = tgs.getString("attachment");
+                
                 
 //                System.out.println("----------------------------"+i+""+i+""+i);
 //                System.out.println(deadTgs[i]);
@@ -229,7 +237,7 @@ public class Tugas extends JFrame{
                 //loop bikin tugas
                 for(int i=0;i<arrayTask.length();i++){
                 
-                    JPanel pTugas = new JPanel(new GridLayout(7,2));
+                    JPanel pTugas = new JPanel(new GridLayout(8,2));
     //		pTugas.setBounds(50,70,300,400);
                     pTugas.setBorder(BorderFactory.createLineBorder(Color.black));
                     pUtama2.add(pTugas);
@@ -269,6 +277,12 @@ public class Tugas extends JFrame{
 
                     tagTgs[i] = new JLabel(tagsTgs[i]);
                     pTugas.add(tagTgs[i]);
+                    
+                    JLabel attach = new JLabel("Attachment :");
+                    pTugas.add(attach);
+
+                    JLabel attachTgs = new JLabel(attTgs[i]);
+                    pTugas.add(attachTgs);
 
                     JLabel status = new JLabel("Status :");
                     pTugas.add(status);
