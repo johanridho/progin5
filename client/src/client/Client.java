@@ -169,7 +169,7 @@ public class Client {
             json = reqGetTask(user_id);
             System.out.println(json.toString(4));
 
-            json = reqSetTask(user_id, "63");
+            json = reqSetTask(user_id, "63", 1);
             System.out.println(json.toString(4));
 
             json = reqGetTask(user_id);
