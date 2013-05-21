@@ -92,7 +92,10 @@ public class Tugas extends JFrame{
             
             File fileUser = new File(user_id);
             if(fileUser.exists()){                
-                lastSync = getLastSyncFile(user_id);
+//                lastSync = getLastSyncFile(user_id);
+                lastSync = System.currentTimeMillis();
+                setLastSyncFile(user_id, lastSync+"");
+                
                 
                 System.out.println("qqqqqqqqqqq");
 //                System.out.println(lastSync);
@@ -190,7 +193,7 @@ public class Tugas extends JFrame{
 		setContentPane(pUtama);
                 
                 //panel penampung tugas2
-                JPanel pUtama2 = new JPanel(new GridLayout(4,4));
+                JPanel pUtama2 = new JPanel(new GridLayout(4,1));
                 pUtama2.setBounds(20,50,1200,700);
                 pUtama2.setBorder(BorderFactory.createLineBorder(Color.black));
                 pUtama.add(pUtama2);
