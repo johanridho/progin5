@@ -94,11 +94,12 @@ class ChildServer extends Thread {
         return json;
     }
 
-    public JSONObject respNegateTask(JSONObject json) throws JSONException, IOException {
+    public JSONObject respSetTask(JSONObject json) throws JSONException, IOException {
         String user_id = RSA.decrypt((String) json.get("user_id"), Server.privateKey);
         long timestamp = (long) json.get("timestamp");
         String token = (String) json.get("token");
         String task_id = (String) json.get("task_id");
+        int done = (int) json.get("done");
         if (token.compareToIgnoreCase(MD5.hash(user_id + String.valueOf(timestamp))) != 0 || System.currentTimeMillis() > timestamp + 5000) {
             json = new JSONObject();
             json.put("success", false);
@@ -106,8 +107,8 @@ class ChildServer extends Thread {
         } else {
             json = new JSONObject();
             json.put("success", true);
-            String req = Server.http("PUT", "http://core.hp.af.cm/api.php/negateTask/" + task_id + "/" + timestamp);
-            System.out.println("NegateTask request success = " + req);
+            String req = Server.http("PUT", "http://core.hp.af.cm/api.php/setTask/" + task_id + "/" + done+ "/" + timestamp);
+            System.out.println("SetTask request success = " + req);
         }
         return json;
     }
@@ -136,8 +137,8 @@ class ChildServer extends Thread {
                     json = respLogin(json);
                 } else if ("gettask".compareToIgnoreCase((String) json.get("method")) == 0) {
                     json = respGetTask(json);
-                } else if ("negatetask".compareToIgnoreCase((String) json.get("method")) == 0) {
-                    json = respNegateTask(json);
+                } else if ("settask".compareToIgnoreCase((String) json.get("method")) == 0) {
+                    json = respSetTask(json);
                 }
                 sendPacket(json);
             } catch (NullPointerException | IOException | JSONException ex) {

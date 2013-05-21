@@ -28,7 +28,7 @@ public class Server {
         if ("put".compareToIgnoreCase(method) == 0) {
             conn.setDoOutput(true);
             OutputStreamWriter out = new OutputStreamWriter(
-                conn.getOutputStream());
+                    conn.getOutputStream());
             out.write("Hello world");
             out.close();
         }
@@ -56,8 +56,7 @@ public class Server {
      * public static void main(String[] args) throws IOException, JSONException
      * { String hasil = http("GET",
      * "http://progin001.ap01.aws.af.cm/api.php/getTask/1"); JSONArray j = new
-     * JSONArray(hasil); System.out.println(j.toString(4));
-    }
+     * JSONArray(hasil); System.out.println(j.toString(4)); }
      */
     final private static int port = 1234;
     public static PublicKey publicKey;

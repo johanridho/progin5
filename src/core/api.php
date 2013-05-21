@@ -32,6 +32,9 @@
 			case 'negateTask':
 				negateTask($request[1],$request[2]);
 				break;
+			case 'setTask':
+				setTask($request[1],$request[2],$request[3]);
+				break;
 			default:
 				echo json_encode(array("error" => "Unknown method!"));
 		}
