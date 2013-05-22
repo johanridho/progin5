@@ -5,6 +5,7 @@
 package server;
 
 import encryption.RSA;
+import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -68,7 +69,7 @@ public class Server {
     public static void main(String args[]) throws IOException, URISyntaxException {
         
 //        Desktop.getDesktop().browse(new URI("http://www.google.com"));
-        JFrame fr = new JFrame();
+        JFrame fr = new JFrame("Server");
         fr.setSize(1200, 800);
         fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
@@ -126,7 +127,7 @@ public class Server {
                     
                 } catch (Exception ex) {
                     System.out.println(ex);
-                    JOptionPane.showMessageDialog(frCheckbox, "Cannot bind socket");
+                    JOptionPane.showMessageDialog(new JFrame(), "Cannot bind socket");
                 }
                
             }

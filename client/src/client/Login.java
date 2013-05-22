@@ -1,18 +1,22 @@
 package client;
 
+import encryption.ObjectString;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.security.PublicKey;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 
 public class Login extends JFrame{
@@ -23,7 +27,7 @@ public class Login extends JFrame{
 	
 	
 	public Login(){
-		super();
+		super("Login");
 		setSize(800, 700);
 //		pack();
 //		this.setVisible(true);
@@ -58,24 +62,44 @@ public class Login extends JFrame{
 //		btnLogin.setBounds(400, 50, 90, 30);
 		btnLogin.addActionListener(new ActionListener() {
 			
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-                try {                 
-//                    System.out.println(getUsername());
-//                    System.out.println(getPwd());
-                    
-                    Tugas tugas = new Tugas(getUsername(),getPwd());
-                    dispose();
-                    
-                    
-                } catch (IOException ex) {
-                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (JSONException ex) {
-                    Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
-                }
-				
-			}
-		});
+                    @Override
+                    public void actionPerformed(ActionEvent arg0) {
+                            try {                 
+            //                    System.out.println(getUsername());
+            //                    System.out.println(getPwd());
+
+                                try {
+                                    JSONObject json = Client.reqGetPublicKey();
+                        //            System.out.println(json.toString(4));
+
+                                    Client.key = (PublicKey) ObjectString.SToO((String) json.get("publickey"));
+                        //            System.out.println(Client.key);
+
+                        //            json = Client.reqLogin("admin", "admin");
+                        //            System.out.println(json.toString(4));
+                                    json = Client.reqLogin(getUsername(),getPwd());
+                                    String user_id = json.getInt("user_id")+"";
+                                    System.out.println("user id: "+user_id);
+        //                            System.out.println("closing socket");
+                                    Client.s.close();                                    
+//                                    System.out.println("tes");
+                                    
+                                    Tugas tugas = new Tugas(getUsername(),getPwd());
+                                    dispose();
+                                    
+                                } catch (IOException e) {
+                                    System.out.println("Cannot connecto to servero");
+                                    JOptionPane.showMessageDialog(new JFrame(), "login gagal");
+                                }
+        //                        System.out.println("connected to server....");
+//                                    
+                            } catch (JSONException ex) {
+                                JOptionPane.showMessageDialog(new JFrame(), "login gagal");
+        //                        Logger.getLogger(Login.class.getName()).log(Level.SEVERE, null, ex);
+                            }
+                                                        
+                        }//end act
+                    });
 		
 		
 		

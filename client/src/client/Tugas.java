@@ -42,6 +42,8 @@ public class Tugas extends JFrame{
         private String[] userTgs;            
         private String[] deadTgs;
         private String[] attTgs;
+        private String[] attTgs22;
+        private String[] attTgs33;
         
         
         private JLabel[] judulTgs;        
@@ -53,7 +55,7 @@ public class Tugas extends JFrame{
         private JCheckBox[] statusTgs;
         
 	public Tugas(String usergan, String pwdgan) throws IOException, JSONException{
-            super();
+            super("Daftar Tugas");
             setSize(1200, 800);
             setDefaultCloseOperation(EXIT_ON_CLOSE);
 //		setDefaultLookAndFeelDecorated(true);            
@@ -84,7 +86,7 @@ public class Tugas extends JFrame{
 //            System.out.println(json.toString(4));
             json = Client.reqLogin(usergan, pwdgan);                        
 
-            user_id = json.getString("user_id");
+            user_id = json.getInt("user_id")+"";
             
             
             
@@ -151,6 +153,8 @@ public class Tugas extends JFrame{
             userTgs = new String[arrayTask.length()];            
             deadTgs = new String[arrayTask.length()];
             attTgs = new String[arrayTask.length()];
+            attTgs22 = new String[arrayTask.length()];
+            attTgs33 = new String[arrayTask.length()];
           
             for (int i=0; i<arrayTask.length();i++){
                 JSONObject tgs = arrayTask.getJSONObject(i);
@@ -158,9 +162,16 @@ public class Tugas extends JFrame{
                 String[] apake=new String[arraytemp.length()];
                 for(int j=0;j<arraytemp.length();j++){
                     JSONObject temp = arraytemp.getJSONObject(j);
-                    apake[j] = temp.getString("filename");                    
-                    attTgs[i]+=apake[j]+",";                    
+                    apake[j] = temp.getString("filename");   
+                    if(attTgs[i]==null){
+                        attTgs[i]=apake[j];       
+                    }else if(attTgs22[i]==null){
+                        attTgs22[i]=apake[j];       
+                    }else if(attTgs33[i]==null){
+                        attTgs33[i]=apake[j];       
+                    }                        
                 }
+                
                 
 //                JSONArray arraytemp2 = tgs.getJSONArray("tags");
 //                String[] apake2=new String[arraytemp2.length()];
@@ -171,11 +182,11 @@ public class Tugas extends JFrame{
 //                }
                 
                 nameTgs[i] = tgs.getString("name");
-                tagsTgs[i] = tgs.getString("tags");
+                tagsTgs[i] = tgs.get("tags")+"";
                 doneTgs[i] = tgs.getInt("done");
                 idTgs[i] = tgs.getInt("task_id");
                 katTgs[i] = tgs.getString("category");
-                userTgs[i] = tgs.getString("assignee");
+                userTgs[i] = tgs.get("assignee")+"";
                 deadTgs[i] = tgs.getString("deadline");
 //                attTgs[i] = ;
                 
@@ -256,7 +267,7 @@ public class Tugas extends JFrame{
                 //loop bikin tugas
                 for(int i=0;i<arrayTask.length();i++){
                 
-                    JPanel pTugas = new JPanel(new GridLayout(8,2));
+                    JPanel pTugas = new JPanel(new GridLayout(10,2));
     //		pTugas.setBounds(50,70,300,400);
                     pTugas.setBorder(BorderFactory.createLineBorder(Color.black));
                     pUtama2.add(pTugas);
@@ -316,6 +327,37 @@ public class Tugas extends JFrame{
                     
                     
                     pTugas.add(attachTgs);
+                    
+                    
+                    JLabel attachTgs22 = new JLabel(attTgs22[i]);
+                    attachTgs22.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    final String sss22 = attTgs22[i];
+                    attachTgs22.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                    try {
+                        Desktop.getDesktop().browse(new URI("http://localhost/IF3038-2013/src/attachment/"+sss22));
+                    } catch (URISyntaxException | IOException ex) {
+                        Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                        }
+                    });                                       
+                    pTugas.add(attachTgs22);
+                    
+                    JLabel attachTgs33 = new JLabel(attTgs33[i]);
+                    attachTgs33.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    final String sss33 = attTgs33[i];
+                    attachTgs33.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                    try {
+                        Desktop.getDesktop().browse(new URI("http://localhost/IF3038-2013/src/attachment/"+sss33));
+                    } catch (URISyntaxException | IOException ex) {
+                        Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                        }
+                    });
+                    pTugas.add(attachTgs33);
 
                     JLabel status = new JLabel("Status :");
                     pTugas.add(status);
