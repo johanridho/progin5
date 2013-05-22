@@ -10,7 +10,7 @@
 			$cat = query('select name from category where category_id = :category_id',array('category_id' => $row['category_id']));
 			$row['category'] = $cat['name'];
 			$row['assignee'] = queryAll('select name from user where user_id in (select user_id from assign where task_id = :task_id)',array('task_id' => $row['task_id']));
-			$row['attachment'] = queryAll('select * from attachment where task_id = :task_id',array('task_id' => $row['category_id']));
+			$row['attachment'] = queryAll('select * from attachment where task_id = :task_id',array('task_id' => $row['task_id']));
 		}
 		echo json_encode($hasil);
 	}
