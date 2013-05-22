@@ -70,31 +70,18 @@ public class Server {
         
 //        Desktop.getDesktop().browse(new URI("http://www.google.com"));
         JFrame fr = new JFrame("Server");
-        fr.setSize(1200, 800);
+        fr.setSize(600, 200);
         fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         
         JPanel pn = new JPanel(null);
         fr.setContentPane(pn);
         
-        JButton btn2 = new JButton("Stop");
-        btn2.setBounds(300, 30, 200, 30);
-//        btn2.setVisible(false);
-        pn.add(btn2);
-        
-        JButton btn = new JButton("Start");
-        btn.setBounds(30, 30, 200, 30);
-        pn.add(btn);
-        final JFrame frCheckbox = fr;
-        final JButton btn2checkbox = btn2;
-        
-        btn.addActionListener(new ActionListener() {
-            
-            
+         final Thread threadServer = new Thread(new Runnable() {
+
             @Override
-            public void actionPerformed(ActionEvent e) {
-//                throw new UnsupportedOperationException("Not supported yet.");                           
-//                btn2checkbox.setVisible(true);
-                System.out.println("starting server...");
+            public void run() {
+//                throw new UnsupportedOperationException("Not supported yet.");
+                 System.out.println("starting server...");
                 try {
             // Check if the pair of keys are present else generate those.
                     if (!RSA.areKeysPresent()) {
@@ -129,6 +116,40 @@ public class Server {
                     System.out.println(ex);
                     JOptionPane.showMessageDialog(new JFrame(), "Cannot bind socket");
                 }
+            }
+        });
+         
+        JButton btn2 = new JButton("Stop");
+        btn2.setBounds(300, 30, 200, 30);
+//        btn2.setVisible(false);
+        pn.add(btn2);
+        btn2.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                throw new UnsupportedOperationException("Not supported yet.");
+                threadServer.stop();
+                        
+            }
+        });
+        
+       
+        
+        JButton btn = new JButton("Start");
+        btn.setBounds(30, 30, 200, 30);
+        pn.add(btn);
+        final JFrame frCheckbox = fr;
+        final JButton btn2checkbox = btn2;
+        
+        btn.addActionListener(new ActionListener() {
+            
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                throw new UnsupportedOperationException("Not supported yet.");                           
+//                btn2checkbox.setVisible(true);
+               threadServer.start();
+//               btn.setEnabled(false);
                
             }
         });
