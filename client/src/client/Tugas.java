@@ -2,10 +2,13 @@ package client;
 
 import encryption.ObjectString;
 import java.awt.Color;
+import java.awt.Desktop;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.security.PublicKey;
 import java.sql.Struct;
 import java.util.logging.Level;
@@ -154,7 +157,7 @@ public class Tugas extends JFrame{
                 for(int j=0;j<arraytemp.length();j++){
                     JSONObject temp = arraytemp.getJSONObject(j);
                     apake[j] = temp.getString("filename");
-                    attTgs[i]+=apake[j]+",";
+                    attTgs[i]+=apake[j]+",";                    
                 }
                 
 //                JSONArray arraytemp2 = tgs.getJSONArray("tags");
@@ -296,6 +299,7 @@ public class Tugas extends JFrame{
                     pTugas.add(attach);
 
                     JLabel attachTgs = new JLabel(attTgs[i]);
+                    
                     pTugas.add(attachTgs);
 
                     JLabel status = new JLabel("Status :");
@@ -320,7 +324,14 @@ public class Tugas extends JFrame{
                             }
                                 System.out.println("konek sukses");
                                 try {
-                                        JSONObject isi2 = Client.reqNegateTask(user_id, idTgs[iCheckbox]+"");
+//                                        JSONObject isi2 = Client.reqNegateTask(user_id, idTgs[iCheckbox]+"");
+                                        if(statusTgs[iCheckbox].equals("0")){
+                                            JSONObject isi2 = Client.reqSetTask(user_id, idTgs[iCheckbox]+"",1);
+                                        }else{
+                                            JSONObject isi2 = Client.reqSetTask(user_id, idTgs[iCheckbox]+"",0);
+                                        }
+                                        
+                                        
                                     } catch (JSONException ex) {
                                         Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
                                     } catch (IOException ex) {
@@ -589,7 +600,12 @@ public class Tugas extends JFrame{
                         if(doneTgs2[i]==getStatusFromFile(user_id, idTgs2[i]) || getStatusFromFile(user_id, idTgs2[i])==2){
                             
                         }else{
-                            JSONObject tempJson = Client.reqNegateTask(user_id, idTgs2[i]+"");
+                            if(doneTgs2[i]==0){
+                                JSONObject tempJson = Client.reqSetTask(user_id, idTgs2[i]+"",1);
+                            }else{
+                                JSONObject tempJson = Client.reqSetTask(user_id, idTgs2[i]+"",0);
+                            }
+                            
                         }
                    }//end for     
 //                        
@@ -642,7 +658,10 @@ public class Tugas extends JFrame{
 //            }
 //            }//end connect            
         }//end sinkronkan
-	
+
+        public void browseURL(String s) throws IOException, URISyntaxException{
+            Desktop.getDesktop().browse(new URI(s));
+        }
 	
         
         

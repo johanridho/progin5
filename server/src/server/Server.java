@@ -5,13 +5,16 @@
 package server;
 
 import encryption.RSA;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.ServerSocket;
-import java.net.Socket;
-import java.net.URL;
+import java.net.*;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 /**
  *
@@ -62,34 +65,77 @@ public class Server {
     public static PublicKey publicKey;
     public static PrivateKey privateKey;
 
-    public static void main(String args[]) {
-        try {
+    public static void main(String args[]) throws IOException, URISyntaxException {
+        
+//        Desktop.getDesktop().browse(new URI("http://www.google.com"));
+        JFrame fr = new JFrame();
+        fr.setSize(1200, 800);
+        fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        JPanel pn = new JPanel(null);
+        fr.setContentPane(pn);
+        
+        JButton btn2 = new JButton("Stop");
+        btn2.setBounds(300, 30, 200, 30);
+//        btn2.setVisible(false);
+        pn.add(btn2);
+        
+        JButton btn = new JButton("Start");
+        btn.setBounds(30, 30, 200, 30);
+        pn.add(btn);
+        final JFrame frCheckbox = fr;
+        final JButton btn2checkbox = btn2;
+        
+        btn.addActionListener(new ActionListener() {
+            
+            
+            @Override
+            public void actionPerformed(ActionEvent e) {
+//                throw new UnsupportedOperationException("Not supported yet.");                           
+//                btn2checkbox.setVisible(true);
+                System.out.println("starting server...");
+                try {
             // Check if the pair of keys are present else generate those.
-            if (!RSA.areKeysPresent()) {
-                // Method generates a pair of keys using the RSA algorithm and stores it
-                // in their respective files
-                RSA.generateKey();
+                    if (!RSA.areKeysPresent()) {
+                        // Method generates a pair of keys using the RSA algorithm and stores it
+                        // in their respective files
+                        RSA.generateKey();
+                    }
+
+
+                    ObjectInputStream inputStream = null;
+
+                    // Encrypt the string using the public key
+                    inputStream = new ObjectInputStream(new FileInputStream(RSA.PUBLIC_KEY_FILE));
+                    publicKey = (PublicKey) inputStream.readObject();
+
+                    // Decrypt the cipher text using the private key.
+                    inputStream = new ObjectInputStream(new FileInputStream(RSA.PRIVATE_KEY_FILE));
+                    privateKey = (PrivateKey) inputStream.readObject();
+
+                    ServerSocket sSocket = new ServerSocket(port);
+                    
+                    System.out.println("server started ...");
+                    
+                    while (true) {   // use infinte loop for accepting request        
+                        Socket socket = sSocket.accept();
+                        ChildServer cServer = new ChildServer(socket);
+                        cServer.start();
+                    }
+                    
+                    
+                } catch (Exception ex) {
+                    System.out.println(ex);
+                    JOptionPane.showMessageDialog(frCheckbox, "Cannot bind socket");
+                }
+               
             }
-
-
-            ObjectInputStream inputStream = null;
-
-            // Encrypt the string using the public key
-            inputStream = new ObjectInputStream(new FileInputStream(RSA.PUBLIC_KEY_FILE));
-            publicKey = (PublicKey) inputStream.readObject();
-
-            // Decrypt the cipher text using the private key.
-            inputStream = new ObjectInputStream(new FileInputStream(RSA.PRIVATE_KEY_FILE));
-            privateKey = (PrivateKey) inputStream.readObject();
-
-            ServerSocket sSocket = new ServerSocket(port);
-            while (true) {   // use infinte loop for accepting request        
-                Socket socket = sSocket.accept();
-                ChildServer cServer = new ChildServer(socket);
-                cServer.start();
-            }
-        } catch (Exception ex) {
-            System.out.println(ex);
-        }
-    }
+        });
+        
+        
+        
+        
+        
+        fr.setVisible(true);
+    }//end main
 }
