@@ -17,8 +17,8 @@ public class GUI {
 
     	public static void main(String [] args)throws IOException, JSONException {
     
-		Login login = new Login();
-//		Tugas tugas = new Tugas("admin","admin");
+//		Login login = new Login();
+		Tugas tugas = new Tugas("admin","admin");
         }//end main    
 
 }//end class

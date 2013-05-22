@@ -44,6 +44,7 @@ public class Tugas extends JFrame{
         private String[] attTgs;
         private String[] attTgs22;
         private String[] attTgs33;
+        private String[] arrayAsignee;
         
         
         private JLabel[] judulTgs;        
@@ -173,20 +174,30 @@ public class Tugas extends JFrame{
                 }
                 
                 
-//                JSONArray arraytemp2 = tgs.getJSONArray("tags");
-//                String[] apake2=new String[arraytemp2.length()];
-//                for(int jj=0;jj<arraytemp2.length();jj++){
-//                    JSONObject temp2 = arraytemp2.getJSONObject(jj);
-//                    apake[jj] = temp2.getString("name");
-//                    tagsTgs[i]+=apake[jj]+",";
-//                }
+                JSONArray arraytemp2 = tgs.getJSONArray("tags");
+                String[] apake2=new String[arraytemp2.length()];
+                tagsTgs[i]="";
+                for(int jj=0;jj<arraytemp2.length();jj++){
+                    JSONObject temp2 = arraytemp2.getJSONObject(jj);
+                    apake2[jj] = temp2.getString("name");
+                    tagsTgs[i]+=apake2[jj]+",";
+                }
+                
+                JSONArray arraytemp3 = tgs.getJSONArray("assignee");
+                String[] apake3=new String[arraytemp3.length()];
+                userTgs[i]="";
+                for(int jj=0;jj<arraytemp3.length();jj++){
+                    JSONObject temp3 = arraytemp3.getJSONObject(jj);
+                    apake3[jj] = temp3.getString("name");
+                    userTgs[i]+=apake3[jj]+",";
+                }
                 
                 nameTgs[i] = tgs.getString("name");
-                tagsTgs[i] = tgs.get("tags")+"";
+//                tagsTgs[i] = tgs.get("tags")+"";
                 doneTgs[i] = tgs.getInt("done");
                 idTgs[i] = tgs.getInt("task_id");
                 katTgs[i] = tgs.getString("category");
-                userTgs[i] = tgs.get("assignee")+"";
+//                userTgs[i] = tgs.get("assignee")+"";
                 deadTgs[i] = tgs.getString("deadline");
 //                attTgs[i] = ;
                 
@@ -278,7 +289,7 @@ public class Tugas extends JFrame{
                     judulTgs[i] = new JLabel(nameTgs[i]);
                     pTugas.add(judulTgs[i]);
                     
-                    JLabel id = new JLabel("ID tugas :");
+                    JLabel id = new JLabel("Assignee :");
                     pTugas.add(id);                                         
                     
                     LabelIdTgs[i] = new JLabel(idTgs[i]+"");
