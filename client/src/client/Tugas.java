@@ -2,15 +2,17 @@ package client;
 
 import encryption.ObjectString;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.*;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.PublicKey;
-import java.sql.Struct;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.JSONObject;
@@ -156,7 +158,7 @@ public class Tugas extends JFrame{
                 String[] apake=new String[arraytemp.length()];
                 for(int j=0;j<arraytemp.length();j++){
                     JSONObject temp = arraytemp.getJSONObject(j);
-                    apake[j] = temp.getString("filename");
+                    apake[j] = temp.getString("filename");                    
                     attTgs[i]+=apake[j]+",";                    
                 }
                 
@@ -299,6 +301,19 @@ public class Tugas extends JFrame{
                     pTugas.add(attach);
 
                     JLabel attachTgs = new JLabel(attTgs[i]);
+                    attachTgs.setCursor(new Cursor(Cursor.HAND_CURSOR));
+                    final String sss = attTgs[i];
+                    attachTgs.addMouseListener(new MouseAdapter() {
+                        @Override
+                        public void mouseClicked(MouseEvent e) {
+                    try {
+                        Desktop.getDesktop().browse(new URI("http://localhost/IF3038-2013/src/attachment/"+sss));
+                    } catch (URISyntaxException | IOException ex) {
+                        Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+                        }
+                    });
+                    
                     
                     pTugas.add(attachTgs);
 
