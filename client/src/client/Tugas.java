@@ -4,6 +4,7 @@ import encryption.ObjectString;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Desktop;
+import java.awt.Frame;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,6 +23,7 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -104,6 +106,7 @@ public class Tugas extends JFrame{
                 lastSync = System.currentTimeMillis();
                 setLastSyncFile(user_id, lastSync+"");
                 
+//                sinkronkan(usergan, pwdgan);
                 
                 System.out.println("qqqqqqqqqqq");
 //                System.out.println(lastSync);
@@ -259,8 +262,14 @@ public class Tugas extends JFrame{
                 try {
                     try {
                         // TODO Auto-generated method stub
-                        System.out.println("oooooooooooo");
-                        sinkronkan(user_id, pwdgan2);
+//                        if(getLastSyncFile(user_id)>=getLastWaktu(user_id)){
+//                            JOptionPane.showMessageDialog(new Frame(), "Semua tugas sudah sinkron");
+//                        }else{
+                            System.out.println("Syncronizing...");                        
+                            sinkronkan(user_id, pwdgan2);
+                            JOptionPane.showMessageDialog(new Frame(), "Sinkron berhasil");
+//                        }
+                        
                     } catch (IOException ex) {
                         Logger.getLogger(Tugas.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -690,19 +699,6 @@ public class Tugas extends JFrame{
                     for (int i=0;i<arrayTask2.length();i++){
                         JSONObject tgs = arrayTask2.getJSONObject(i);                       
                         doneTgs2[i] = tgs.getInt("done");  
-//                        idTgs2[i] = tgs.getInt("task_id");
-//                        nameTgs2[i] = tgs.getString("name");
-//                        tagsTgs2[i] = tgs.getString("tags");                        
-//                        katTgs2[i] = tgs.getString("category");
-//                        userTgs2[i] = tgs.getString("assignee");
-//                        deadTgs2[i] = tgs.getString("deadline");
-                        
-//                        judulTgs[i].setText("hj");        
-//                        LabelIdTgs[i].setText(idTgs2[i]+"");
-//                        userIDTgs[i].setText(userTgs2[i]);
-//                        kategoriTgs[i].setText(katTgs2[i]);
-//                        deadlineTgs[i].setText(deadTgs2[i]);
-//                        tagTgs[i].setText(tagsTgs2[i]);
                         if(doneTgs2[i]==1){
                             statusTgs[i].setSelected(true);
                         }else{
